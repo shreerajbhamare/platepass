@@ -1,65 +1,267 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useState, useCallback } from "react";
+import dynamic from "next/dynamic";
+import { createClient } from "@/lib/supabase/client";
+import { Listing } from "@/lib/types";
+import ListingCard from "@/components/listings/listing-card";
+import CreateListingForm from "@/components/listings/create-listing-form";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import type { User } from "@supabase/supabase-js";
+
+const ListingMap = dynamic(() => import("@/components/map/listing-map"), {
+  ssr: false,
+  loading: () => <div className="w-full h-full min-h-[400px] bg-muted animate-pulse rounded-lg" />,
+});
+
+export default function HomePage() {
+  const supabase = createClient();
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
+  const [filter, setFilter] = useState<string>("all");
+  const [view, setView] = useState<"map" | "feed">("map");
+
+  // Fetch user
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Fetch listings
+  const fetchListings = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("listings")
+      .select("*")
+      .eq("status", "active")
+      .gte("pickup_end", new Date().toISOString())
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      const parsed = data.map((l: Record<string, unknown>) => ({
+        ...l,
+        location: parseLocation(l.location),
+      })) as Listing[];
+      setListings(parsed);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchListings();
+  }, [fetchListings]);
+
+  // Realtime subscription
+  useEffect(() => {
+    const channel = supabase
+      .channel("listings-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "listings" },
+        () => {
+          fetchListings();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchListings]);
+
+  const handleClaim = async (listing: Listing) => {
+    if (!user) {
+      toast.error("Please sign in to claim food");
+      return;
+    }
+
+    const { error } = await supabase.from("claims").insert({
+      listing_id: listing.id,
+      claimer_id: user.id,
+      quantity: 1,
+      status: "reserved",
+    });
+
+    if (error) {
+      toast.error("Failed to claim. Try again.");
+    } else {
+      toast.success("Claimed! Pick up within 15 minutes.");
+      fetchListings();
+    }
+  };
+
+  const filteredListings = listings.filter((l) => {
+    if (filter === "all") return true;
+    if (filter === "flash") return l.is_flash;
+    return l.food_category === filter;
+  });
+
+  const totalMealsSaved = listings.reduce((sum, l) => sum + (l.quantity_total - l.quantity_remaining), 0);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex flex-col h-screen">
+      {/* Header */}
+      <header className="border-b px-4 py-3 flex items-center justify-between bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl font-bold text-green-700">🍽️ PlatePass</h1>
+          <Badge variant="secondary" className="hidden sm:inline-flex">
+            {listings.length} active
+          </Badge>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="flex items-center gap-2">
+          {user ? (
+            <>
+              <Button
+                size="sm"
+                className="cursor-pointer"
+                onClick={() => setShowCreateForm(true)}
+              >
+                + Share Food
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => supabase.auth.signOut()}
+                className="cursor-pointer"
+              >
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <a
+              href="/login"
+              className="inline-flex items-center justify-center h-7 px-3 text-sm font-medium rounded-lg border border-border hover:bg-muted transition-colors"
+            >
+              Sign In
+            </a>
+          )}
         </div>
+      </header>
+
+      {/* Impact Bar */}
+      <div className="bg-green-50 border-b px-4 py-2 flex items-center justify-between text-sm">
+        <span className="text-green-800 font-medium">
+          🌍 {totalMealsSaved} meals saved today in your area
+        </span>
+        <div className="flex gap-2">
+          <Select value={filter} onValueChange={(v) => v && setFilter(v)}>
+            <SelectTrigger className="h-7 text-xs w-28">
+              <SelectValue placeholder="Filter" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Food</SelectItem>
+              <SelectItem value="flash">⚡ Flash Only</SelectItem>
+              <SelectItem value="prepared">Prepared</SelectItem>
+              <SelectItem value="produce">Produce</SelectItem>
+              <SelectItem value="baked">Baked</SelectItem>
+              <SelectItem value="packaged">Packaged</SelectItem>
+              <SelectItem value="beverages">Beverages</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <main className="flex-1 relative">
+        <Tabs value={view} onValueChange={(v) => setView(v as "map" | "feed")} className="h-full flex flex-col">
+          <TabsList className="mx-4 mt-2 w-fit">
+            <TabsTrigger value="map">🗺️ Map</TabsTrigger>
+            <TabsTrigger value="feed">📋 Feed</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="map" className="flex-1 m-0 p-0">
+            <div className="h-full min-h-[calc(100vh-180px)]">
+              <ListingMap
+                listings={filteredListings}
+                onListingClick={setSelectedListing}
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="feed" className="flex-1 overflow-auto p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
+              {filteredListings.length === 0 && (
+                <div className="col-span-full text-center py-12 text-muted-foreground">
+                  <p className="text-4xl mb-2">🍽️</p>
+                  <p>No food listings nearby right now.</p>
+                  <p className="text-sm mt-1">Be the first to share!</p>
+                </div>
+              )}
+              {filteredListings.map((listing) => (
+                <ListingCard
+                  key={listing.id}
+                  listing={listing}
+                  onClaim={handleClaim}
+                />
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
       </main>
+
+      {/* Create Listing Sheet */}
+      <Sheet open={showCreateForm} onOpenChange={setShowCreateForm}>
+        <SheetContent side="bottom" className="h-[90vh] overflow-auto">
+          <SheetHeader>
+            <SheetTitle>Share Surplus Food</SheetTitle>
+          </SheetHeader>
+          <div className="py-4">
+            <CreateListingForm
+              onSuccess={() => {
+                setShowCreateForm(false);
+                fetchListings();
+              }}
+              onCancel={() => setShowCreateForm(false)}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Selected Listing Detail */}
+      {selectedListing && (
+        <Sheet open={!!selectedListing} onOpenChange={() => setSelectedListing(null)}>
+          <SheetContent side="bottom" className="h-[60vh] overflow-auto">
+            <SheetHeader>
+              <SheetTitle>{selectedListing.title}</SheetTitle>
+            </SheetHeader>
+            <div className="py-4">
+              <ListingCard listing={selectedListing} onClaim={handleClaim} />
+            </div>
+          </SheetContent>
+        </Sheet>
+      )}
     </div>
   );
+}
+
+function parseLocation(loc: unknown): { lat: number; lng: number } {
+  if (!loc) return { lat: 41.8781, lng: -87.6298 };
+  if (typeof loc === "object" && loc !== null && "coordinates" in loc) {
+    const coords = (loc as { coordinates: number[] }).coordinates;
+    return { lat: coords[1], lng: coords[0] };
+  }
+  if (typeof loc === "string") {
+    const match = loc.match(/POINT\(([-\d.]+)\s+([-\d.]+)\)/);
+    if (match) return { lat: parseFloat(match[2]), lng: parseFloat(match[1]) };
+  }
+  return { lat: 41.8781, lng: -87.6298 };
 }
