@@ -77,6 +77,11 @@ export default function CreateListingForm({ onSuccess, onCancel }: CreateListing
 
       const data = await res.json();
 
+      if (data.error) {
+        toast.error(`AI: ${data.error}`);
+        return;
+      }
+
       if (data.title || data.description || data.food_category) {
         const validCategories = ["prepared", "produce", "baked", "packaged", "beverages", "other"];
         setForm((prev) => ({

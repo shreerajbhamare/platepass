@@ -10,7 +10,7 @@ export async function POST(request: Request) {
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({});
+      return NextResponse.json({ error: "GEMINI_API_KEY not configured" }, { status: 500 });
     }
 
     // Extract base64 data and media type
@@ -53,7 +53,9 @@ export async function POST(request: Request) {
     );
 
     if (!response.ok) {
-      return NextResponse.json({});
+      const errText = await response.text();
+      console.error("Gemini API error:", response.status, errText);
+      return NextResponse.json({ error: `Gemini API error: ${response.status}` }, { status: 502 });
     }
 
     const result = await response.json();
@@ -64,7 +66,8 @@ export async function POST(request: Request) {
     const parsed = JSON.parse(cleaned);
 
     return NextResponse.json(parsed);
-  } catch {
-    return NextResponse.json({});
+  } catch (err) {
+    console.error("detect-food error:", err);
+    return NextResponse.json({ error: "Detection failed" }, { status: 500 });
   }
 }
