@@ -21,6 +21,19 @@ interface Post {
   category: string;
   likes_count: number;
   comments_count: number;
+  group_id: string | null;
+  visibility: string;
+  created_at: string;
+}
+
+interface Group {
+  id: string;
+  name: string;
+  description: string | null;
+  image_url: string | null;
+  creator_name: string;
+  member_count: number;
+  is_public: boolean;
   created_at: string;
 }
 
@@ -70,7 +83,10 @@ export default function CommunityPage() {
   const [user, setUser] = useState<User | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [events, setEvents] = useState<CommunityEvent[]>([]);
-  const [tab, setTab] = useState<"feed" | "events">("feed");
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [groupPosts, setGroupPosts] = useState<Post[]>([]);
+  const [tab, setTab] = useState<"feed" | "events" | "groups">("feed");
   const [showNewPost, setShowNewPost] = useState(false);
   const [showNewEvent, setShowNewEvent] = useState(false);
   const [expandedComments, setExpandedComments] = useState<string | null>(null);
@@ -85,14 +101,65 @@ export default function CommunityPage() {
   useEffect(() => {
     fetchPosts();
     fetchEvents();
+    fetchGroups();
   }, []);
 
   async function fetchPosts() {
     const { data } = await supabase
       .from("community_posts")
       .select("*")
+      .or("visibility.eq.public,visibility.is.null")
       .order("created_at", { ascending: false });
     if (data) setPosts(data);
+  }
+
+  async function fetchGroups() {
+    const { data } = await supabase
+      .from("community_groups")
+      .select("*")
+      .order("member_count", { ascending: false });
+    if (data) setGroups(data);
+  }
+
+  async function fetchGroupPosts(groupId: string) {
+    const { data } = await supabase
+      .from("community_posts")
+      .select("*")
+      .eq("group_id", groupId)
+      .order("created_at", { ascending: false });
+    if (data) setGroupPosts(data);
+  }
+
+  async function handleJoinGroup(groupId: string) {
+    if (!user) {
+      toast.error("Please sign in to join groups");
+      return;
+    }
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", user.id)
+      .single();
+
+    const { error } = await supabase.from("group_members").insert({
+      group_id: groupId,
+      user_id: user.id,
+      user_name: profile?.display_name || "Member",
+    });
+
+    if (error) {
+      if (error.code === "23505") toast.info("You're already a member!");
+      else toast.error("Failed to join");
+      return;
+    }
+
+    await supabase
+      .from("community_groups")
+      .update({ member_count: (groups.find((g) => g.id === groupId)?.member_count || 0) + 1 })
+      .eq("id", groupId);
+
+    fetchGroups();
+    toast.success("Joined group!");
   }
 
   async function fetchEvents() {
@@ -214,17 +281,21 @@ export default function CommunityPage() {
         <div className="flex items-center gap-2">
           <a href="/" className="text-sm text-muted-foreground hover:text-foreground">← Map</a>
           {user && (
-            <Button size="sm" onClick={() => tab === "feed" ? setShowNewPost(true) : setShowNewEvent(true)} className="cursor-pointer">
-              + {tab === "feed" ? "Post" : "Event"}
+            <Button size="sm" onClick={() => {
+              if (tab === "feed" || (tab === "groups" && selectedGroup)) setShowNewPost(true);
+              else if (tab === "events") setShowNewEvent(true);
+            }} className="cursor-pointer">
+              + {tab === "events" ? "Event" : "Post"}
             </Button>
           )}
         </div>
       </header>
 
       {/* Tabs */}
-      <Tabs value={tab} onValueChange={(v) => setTab(v as "feed" | "events")} className="flex-1 flex flex-col min-h-0">
+      <Tabs value={tab} onValueChange={(v) => { setTab(v as "feed" | "events" | "groups"); setSelectedGroup(null); }} className="flex-1 flex flex-col min-h-0">
         <TabsList className="mx-4 mt-2 w-fit shrink-0">
           <TabsTrigger value="feed">📢 Feed</TabsTrigger>
+          <TabsTrigger value="groups">👥 Groups</TabsTrigger>
           <TabsTrigger value="events">📅 Events</TabsTrigger>
         </TabsList>
 
@@ -392,10 +463,86 @@ export default function CommunityPage() {
             ))}
           </div>
         </TabsContent>
+
+        {/* Groups Tab */}
+        <TabsContent value="groups" className="flex-1 min-h-0 overflow-auto p-4">
+          <div className="max-w-2xl mx-auto space-y-4">
+            {selectedGroup ? (
+              <>
+                {/* Group Detail View */}
+                <div className="flex items-center gap-2 mb-4">
+                  <button onClick={() => setSelectedGroup(null)} className="text-sm text-muted-foreground hover:text-foreground cursor-pointer">← Back</button>
+                  <h3 className="font-semibold">{selectedGroup.name}</h3>
+                  <Badge variant="secondary">{selectedGroup.member_count} members</Badge>
+                </div>
+                {groupPosts.length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>No posts in this group yet. Be the first!</p>
+                  </div>
+                )}
+                {groupPosts.map((post) => (
+                  <Card key={post.id} className="overflow-hidden">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-sm">
+                          {post.author_name[0]}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">{post.author_name}</p>
+                          <p className="text-xs text-muted-foreground">{timeAgo(post.created_at)}</p>
+                        </div>
+                      </div>
+                      <p className="text-sm mb-2 whitespace-pre-line">{post.content}</p>
+                      {post.image_url && (
+                        <img src={post.image_url} alt="" className="w-full h-40 object-cover rounded-lg mb-2" />
+                      )}
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <button onClick={() => handleLike(post.id)} className="flex items-center gap-1 cursor-pointer hover:text-red-500">
+                          {likedPosts.has(post.id) ? "❤️" : "🤍"} {post.likes_count}
+                        </button>
+                        <span>💬 {post.comments_count}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </>
+            ) : (
+              <>
+                {/* Groups List */}
+                {groups.map((group) => (
+                  <Card key={group.id} className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setSelectedGroup(group); fetchGroupPosts(group.id); }}>
+                    <CardContent className="p-4 flex gap-3">
+                      {group.image_url ? (
+                        <img src={group.image_url} alt={group.name} className="w-16 h-16 rounded-lg object-cover shrink-0" />
+                      ) : (
+                        <div className="w-16 h-16 rounded-lg bg-green-100 flex items-center justify-center text-2xl shrink-0">👥</div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-sm">{group.name}</h3>
+                        <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{group.description}</p>
+                        <div className="flex items-center justify-between mt-2">
+                          <span className="text-xs text-muted-foreground">👥 {group.member_count} members</span>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-6 text-xs cursor-pointer"
+                            onClick={(e) => { e.stopPropagation(); handleJoinGroup(group.id); }}
+                          >
+                            Join
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </>
+            )}
+          </div>
+        </TabsContent>
       </Tabs>
 
       {/* New Post Modal */}
-      {showNewPost && <NewPostModal onClose={() => setShowNewPost(false)} onSuccess={() => { setShowNewPost(false); fetchPosts(); }} user={user} />}
+      {showNewPost && <NewPostModal onClose={() => setShowNewPost(false)} onSuccess={() => { setShowNewPost(false); if (selectedGroup) fetchGroupPosts(selectedGroup.id); else fetchPosts(); }} user={user} groups={groups} selectedGroup={selectedGroup} />}
 
       {/* New Event Modal */}
       {showNewEvent && <NewEventModal onClose={() => setShowNewEvent(false)} onSuccess={() => { setShowNewEvent(false); fetchEvents(); }} user={user} />}
@@ -403,12 +550,13 @@ export default function CommunityPage() {
   );
 }
 
-function NewPostModal({ onClose, onSuccess, user }: { onClose: () => void; onSuccess: () => void; user: User | null }) {
+function NewPostModal({ onClose, onSuccess, user, groups, selectedGroup }: { onClose: () => void; onSuccess: () => void; user: User | null; groups: Group[]; selectedGroup: Group | null }) {
   const supabase = createClient();
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("general");
   const [customCategory, setCustomCategory] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [visibility, setVisibility] = useState<string>(selectedGroup ? selectedGroup.id : "public");
   const [loading, setLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -445,6 +593,8 @@ function NewPostModal({ onClose, onSuccess, user }: { onClose: () => void; onSuc
       content: content.trim(),
       image_url: photo_url,
       category: finalCategory,
+      group_id: visibility === "public" ? null : visibility,
+      visibility: visibility === "public" ? "public" : "group",
     });
 
     setLoading(false);
@@ -489,6 +639,19 @@ function NewPostModal({ onClose, onSuccess, user }: { onClose: () => void; onSuc
                 required
               />
             )}
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground">Visibility</label>
+            <select
+              value={visibility}
+              onChange={(e) => setVisibility(e.target.value)}
+              className="w-full h-9 rounded-md border px-3 text-sm"
+            >
+              <option value="public">🌍 Public — Everyone can see</option>
+              {groups.map((g) => (
+                <option key={g.id} value={g.id}>🔒 {g.name}</option>
+              ))}
+            </select>
           </div>
           <div className="flex gap-2 items-center">
             <Input
