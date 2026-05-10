@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlatePass - Presentation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: #000; overflow: hidden; }
+
+  .slide {
+    width: 100vw; height: 100vh;
+    display: none; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 60px 80px;
+    position: relative;
+  }
+  .slide.active { display: flex; }
+
+  .bg-white { background: #fff; color: #1a1a1a; }
+  .bg-green { background: linear-gradient(135deg, #166534, #15803d); color: #fff; }
+  .bg-dark { background: linear-gradient(135deg, #0f172a, #1e293b); color: #fff; }
+  .bg-light { background: #f8faf8; color: #1a1a1a; }
+  .bg-red { background: linear-gradient(135deg, #991b1b, #dc2626); color: #fff; }
+  .bg-impact { background: linear-gradient(135deg, #064e3b, #065f46, #047857); color: #fff; }
+
+  h1 { font-size: 72px; font-weight: 800; line-height: 1.1; }
+  h2 { font-size: 48px; font-weight: 700; line-height: 1.2; }
+  h3 { font-size: 32px; font-weight: 600; }
+  p { font-size: 24px; line-height: 1.6; }
+  .subtitle { font-size: 28px; opacity: 0.8; margin-top: 16px; }
+  .small { font-size: 18px; opacity: 0.6; }
+  .label { font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 600; opacity: 0.5; margin-bottom: 16px; }
+  .highlight { color: #16a34a; }
+  .highlight-red { color: #dc2626; }
+
+  .center { text-align: center; }
+  .left { text-align: left; align-items: flex-start; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; width: 100%; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; width: 100%; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 24px; width: 100%; }
+  .spacer { height: 30px; }
+  .spacer-sm { height: 16px; }
+
+  .card-white {
+    background: #fff; border-radius: 16px; padding: 28px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+  .card-outline {
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 16px; padding: 28px;
+  }
+
+  .stat-number { font-size: 64px; font-weight: 800; }
+  .stat-number-sm { font-size: 44px; font-weight: 800; }
+  .stat-label { font-size: 16px; opacity: 0.7; margin-top: 4px; }
+
+  .diagram { max-width: 90%; max-height: 65vh; border-radius: 12px; }
+
+  ul { list-style: none; padding: 0; }
+  ul li { font-size: 22px; padding: 8px 0; display: flex; align-items: center; gap: 12px; }
+  .bullet { width: 8px; height: 8px; border-radius: 50%; background: #16a34a; flex-shrink: 0; }
+  .bullet-white { background: rgba(255,255,255,0.5); }
+
+  .slide-counter {
+    position: fixed; bottom: 20px; right: 30px;
+    font-size: 14px; color: rgba(128,128,128,0.5);
+    z-index: 100;
+  }
+  .progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: #16a34a; z-index: 100;
+    transition: width 0.3s ease;
+  }
+
+  .bg-hero {
+    background: linear-gradient(160deg, #166534 0%, #15803d 40%, #047857 70%, #065f46 100%);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .bg-hero::before {
+    content: '';
+    position: absolute; top: -50%; right: -30%;
+    width: 80%; height: 200%;
+    background: radial-gradient(ellipse, rgba(255,255,255,0.06) 0%, transparent 70%);
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="slide-counter" id="counter"></div>
+
+<!-- SLIDE 1: Hero - Title -->
+<div class="slide bg-hero center active" id="s1" style="padding: 20px 40px;">
+  <p style="font-size: 12px; text-transform: uppercase; letter-spacing: 4px; opacity: 0.5; font-weight: 600; margin-bottom: 10px;">ALI Builds Hackathon 2026 / Chicago</p>
+  <img src="../Images/Hero_page.gif" alt="PlatePass" style="width: 80vw; max-width: 900px; max-height: 55vh; object-fit: contain; filter: drop-shadow(0 8px 30px rgba(0,0,0,0.3));" />
+  <h1 style="font-size: 64px; letter-spacing: -1px; margin-top: 10px; margin-bottom: 2px;">PlatePass</h1>
+  <p style="font-size: 20px; opacity: 0.75; font-weight: 500;">Save food. Feed people. Build community.</p>
+  <p style="font-size: 12px; opacity: 0.4; margin-top: 8px;">Shreeraj Bhamare &middot; Siddharth Bhamare</p>
+</div>
+
+<!-- SLIDE 2: Problem + Why -->
+<div class="slide bg-dark left" id="s2">
+  <div class="label" style="opacity:0.4;">The Problem</div>
+  <h2 style="max-width:900px;">
+    <span style="color:#ef4444;">1.3 billion tons</span> of food wasted every year.
+    <span style="opacity:0.5;"><br>828 million people</span> go hungry every night.
+  </h2>
+  <div class="spacer"></div>
+  <div class="grid-4">
+    <div class="card-outline center">
+      <div class="stat-number-sm" style="color:#ef4444;">$408B</div>
+      <div class="stat-label">US economic loss/yr</div>
+    </div>
+    <div class="card-outline center">
+      <div class="stat-number-sm" style="color:#f97316;">33B lbs</div>
+      <div class="stat-label">Restaurant waste/yr</div>
+    </div>
+    <div class="card-outline center">
+      <div class="stat-number-sm" style="color:#eab308;">30%</div>
+      <div class="stat-label">Grocery produce trashed</div>
+    </div>
+    <div class="card-outline center">
+      <div class="stat-number-sm" style="color:#a3e635;">$1,500</div>
+      <div class="stat-label">Wasted per household/yr</div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <p style="opacity:0.5; max-width:800px;">The problem is not generosity. People want to share. Surplus food is simply invisible. A bakery with 40 unsold croissants at 7 PM cannot reach the 2,000 people within walking distance.</p>
+</div>
+
+<!-- SLIDE 3: Solution + How It Works -->
+<div class="slide bg-white center" id="s3">
+  <div class="label">The Solution</div>
+  <h2 style="margin-bottom: 8px;">Photo to claimed meal in <span class="highlight">4.2 minutes</span></h2>
+  <div class="spacer-sm"></div>
+  <img src="../Images/IMG_1_User_Journey.png" alt="User Journey" class="diagram" />
+</div>
+
+<!-- SLIDE 4: Multi-Agent AI Architecture -->
+<div class="slide bg-white center" id="s4">
+  <div class="label">Multi-Agent AI System</div>
+  <h2 style="margin-bottom: 8px;">5 Expert Agents, One Event Bus</h2>
+  <div class="spacer-sm"></div>
+  <img src="../Images/IMG_2_Mult_Agent_Framework.png" alt="Multi-Agent Architecture" class="diagram" />
+</div>
+
+<!-- SLIDE 5: Solana + Sustainability -->
+<div class="slide bg-white center" id="s5">
+  <div class="label">Self-Sustaining Model</div>
+  <h2 style="margin-bottom: 8px;">Solana Token Rewards - No Grants, No Ads</h2>
+  <div class="spacer-sm"></div>
+  <img src="../Images/IMG_3_Solana_EcoSystem.png" alt="Solana Ecosystem" class="diagram" />
+</div>
+
+<!-- SLIDE 6: Impact -->
+<div class="slide bg-impact center" id="s6">
+  <div class="label" style="opacity:0.5;">Projected Impact / Year 1 / Single City</div>
+  <div class="spacer-sm"></div>
+  <div class="grid-4">
+    <div class="card-outline center">
+      <div class="stat-number">48K</div>
+      <div class="stat-label">Meals Rescued</div>
+    </div>
+    <div class="card-outline center">
+      <div class="stat-number">120T</div>
+      <div class="stat-label">CO2 Prevented</div>
+    </div>
+    <div class="card-outline center">
+      <div class="stat-number">$384K</div>
+      <div class="stat-label">Community Savings</div>
+    </div>
+    <div class="card-outline center">
+      <div class="stat-number">6.7M</div>
+      <div class="stat-label">Liters Water Saved</div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <h3 style="opacity:0.8;">Scaling to 10 cities by Year 2: 480,000 meals, $3.8M saved</h3>
+  <div class="spacer-sm"></div>
+  <p class="small" style="opacity:0.4;">400 users x 4 listings/week x 60% claim rate | EPA, USDA, ReFED</p>
+</div>
+
+<!-- SLIDE 7: Closing -->
+<div class="slide bg-green center" id="s7">
+  <h1>PlatePass</h1>
+  <p class="subtitle">Save food. Feed people. Build community.</p>
+  <div class="spacer"></div>
+  <div class="grid-3" style="max-width:700px;">
+    <div class="center">
+      <p style="font-size:18px; opacity:0.8;">Live Demo</p>
+      <p style="font-size:14px; opacity:0.5;">platepass-kappa.vercel.app</p>
+    </div>
+    <div class="center">
+      <p style="font-size:18px; opacity:0.8;">GitHub</p>
+      <p style="font-size:14px; opacity:0.5;">shreerajbhamare/platepass</p>
+    </div>
+    <div class="center">
+      <p style="font-size:18px; opacity:0.8;">Team</p>
+      <p style="font-size:14px; opacity:0.5;">Shreeraj & Siddharth</p>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <p class="small" style="opacity:0.5;">Thank you. Questions?</p>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+  const total = slides.length;
+
+  function showSlide(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    document.getElementById('counter').textContent = `${current + 1} / ${total}`;
+    document.getElementById('progress').style.width = `${((current + 1) / total) * 100}%`;
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); showSlide(current + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'Backspace') { e.preventDefault(); showSlide(current - 1); }
+    if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) { diff > 0 ? showSlide(current + 1) : showSlide(current - 1); }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.clientX > window.innerWidth / 2) showSlide(current + 1);
+    else showSlide(current - 1);
+  });
+
+  showSlide(0);
+</script>
+
+</body>
+</html>
