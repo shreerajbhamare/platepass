@@ -452,9 +452,25 @@ export default function CreateListingForm({ onSuccess, onCancel }: CreateListing
 
 function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const maxSize = 800;
+      let { width, height } = img;
+      if (width > height && width > maxSize) {
+        height = (height / width) * maxSize;
+        width = maxSize;
+      } else if (height > maxSize) {
+        width = (width / height) * maxSize;
+        height = maxSize;
+      }
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx?.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL("image/jpeg", 0.7));
+    };
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
   });
 }

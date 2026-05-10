@@ -191,14 +191,14 @@ export default function HomePage() {
                   ☰
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem className="cursor-pointer" onSelect={() => { window.location.href = "/impact"; }}>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => { window.location.href = "/impact"; }}>
                     🌍 Impact Dashboard
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer" onSelect={() => { window.location.href = "/runner"; }}>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => { window.location.href = "/runner"; }}>
                     🏃 Runner Mode
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer" onSelect={() => { supabase.auth.signOut(); }}>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => { supabase.auth.signOut(); }}>
                     Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
