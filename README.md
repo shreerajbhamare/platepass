@@ -281,5 +281,5 @@ Deployed on Vercel with automatic deploys from `main`.
 ---
 
 <p align="center">
-  <sub>3D icons by <a href="https://thiings.co">thiings.co</a></sub>
+  <sub>3D icons created with <a href="https://flora.ai">Flora</a></sub>
 </p>

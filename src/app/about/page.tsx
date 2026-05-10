@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-// 3D icons from thiings.co
+// 3D icons created with Flora (flora.ai)
 const ICONS = {
   pizza: "https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-BzDI4uzt2LYSK3YP9UguQDZrOZmC8X.png",
   earth: "https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-TjlQjzEjOBahJ7XJYI49jbifgXpz41.png",
