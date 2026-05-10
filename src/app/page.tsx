@@ -191,6 +191,9 @@ export default function HomePage() {
                   ☰
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => { window.location.href = "/community"; }}>
+                    🌱 Community
+                  </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer" onClick={() => { window.location.href = "/impact"; }}>
                     🌍 Impact Dashboard
                   </DropdownMenuItem>
