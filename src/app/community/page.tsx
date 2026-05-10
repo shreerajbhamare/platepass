@@ -407,6 +407,7 @@ function NewPostModal({ onClose, onSuccess, user }: { onClose: () => void; onSuc
   const supabase = createClient();
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("general");
+  const [customCategory, setCustomCategory] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -415,6 +416,8 @@ function NewPostModal({ onClose, onSuccess, user }: { onClose: () => void; onSuc
     e.preventDefault();
     if (!user || !content.trim()) return;
     setLoading(true);
+
+    const finalCategory = category === "others" ? (customCategory || "others") : category;
 
     const { data: profile } = await supabase
       .from("profiles")
@@ -441,7 +444,7 @@ function NewPostModal({ onClose, onSuccess, user }: { onClose: () => void; onSuc
       author_avatar: profile?.avatar_url,
       content: content.trim(),
       image_url: photo_url,
-      category,
+      category: finalCategory,
     });
 
     setLoading(false);
@@ -464,11 +467,11 @@ function NewPostModal({ onClose, onSuccess, user }: { onClose: () => void; onSuc
             rows={4}
             required
           />
-          <div className="flex gap-2">
+          <div className="space-y-2">
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="flex-1 h-9 rounded-md border px-3 text-sm"
+              className="w-full h-9 rounded-md border px-3 text-sm"
             >
               <option value="general">📢 General</option>
               <option value="food_drive">🍲 Food Drive</option>
@@ -476,7 +479,16 @@ function NewPostModal({ onClose, onSuccess, user }: { onClose: () => void; onSuc
               <option value="waste_collection">♻️ Waste Collection</option>
               <option value="beach_cleaning">🏖️ Beach Cleaning</option>
               <option value="tree_planting">🌳 Tree Planting</option>
+              <option value="others">📝 Others</option>
             </select>
+            {category === "others" && (
+              <Input
+                value={customCategory}
+                onChange={(e) => setCustomCategory(e.target.value)}
+                placeholder="Enter category name (e.g., Blood Drive, Mentorship, etc.)"
+                required
+              />
+            )}
           </div>
           <div className="flex gap-2 items-center">
             <Input
@@ -511,6 +523,7 @@ function NewEventModal({ onClose, onSuccess, user }: { onClose: () => void; onSu
     title: "",
     description: "",
     category: "food_drive",
+    customCategory: "",
     event_date: "",
     location_address: "",
     max_volunteers: 20,
@@ -529,12 +542,18 @@ function NewEventModal({ onClose, onSuccess, user }: { onClose: () => void; onSu
       .eq("id", user.id)
       .single();
 
+    const finalCategory = form.category === "others" ? (form.customCategory || "others") : form.category;
+
     await supabase.from("community_events").insert({
       organizer_id: user.id,
       organizer_name: profile?.display_name || "Anonymous",
-      ...form,
-      image_url: form.image_url || null,
+      title: form.title,
+      description: form.description,
+      category: finalCategory,
       event_date: new Date(form.event_date).toISOString(),
+      location_address: form.location_address,
+      max_volunteers: form.max_volunteers,
+      image_url: form.image_url || null,
     });
 
     setLoading(false);
@@ -574,6 +593,7 @@ function NewEventModal({ onClose, onSuccess, user }: { onClose: () => void; onSu
               <option value="waste_collection">♻️ Waste Collection</option>
               <option value="beach_cleaning">🏖️ Beach Cleaning</option>
               <option value="tree_planting">🌳 Tree Planting</option>
+              <option value="others">📝 Others</option>
             </select>
             <Input
               type="number"
@@ -584,6 +604,14 @@ function NewEventModal({ onClose, onSuccess, user }: { onClose: () => void; onSu
               max={500}
             />
           </div>
+          {form.category === "others" && (
+            <Input
+              value={form.customCategory}
+              onChange={(e) => setForm({ ...form, customCategory: e.target.value })}
+              placeholder="Enter event type (e.g., Blood Drive, Mentorship, etc.)"
+              required
+            />
+          )}
           <Input
             type="datetime-local"
             value={form.event_date}
