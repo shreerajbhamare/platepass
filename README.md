@@ -47,7 +47,7 @@ PlatePass turns every person with surplus food into a broadcast tower and every 
 <br clear="left" />
 
 <p align="center">
-  <img src="Images/IMG_1_User_Journey.png" alt="User Journey - From Surplus to Saved Meal" />
+  <img src="Images/IMG_1_User_Journey.png" alt="User Journey - From Surplus to Saved Meal" width="75%" />
 </p>
 
 ---
@@ -61,7 +61,7 @@ PlatePass is not a single model. It is a coordinated system of **five expert age
 <br clear="left" />
 
 <p align="center">
-  <img src="Images/IMG_2_Mult_Agent_Framework.png" alt="Multi-Agent AI Architecture" />
+  <img src="Images/IMG_2_Mult_Agent_Framework.png" alt="Multi-Agent AI Architecture" width="75%" />
 </p>
 
 | Agent | Model / Tech | What It Does | Performance |
@@ -83,7 +83,7 @@ PlatePass is not a single model. It is a coordinated system of **five expert age
 ## AI Food Recognition Pipeline
 
 <p align="center">
-  <img src="Images/IMG_4_AI_FOOD_Recon_Pipeline.png" alt="AI Food Recognition Pipeline" />
+  <img src="Images/IMG_4_AI_FOOD_Recon_Pipeline.png" alt="AI Food Recognition Pipeline" width="75%" />
 </p>
 
 ---
@@ -91,7 +91,7 @@ PlatePass is not a single model. It is a coordinated system of **five expert age
 ## Real-Time Event-Driven Architecture
 
 <p align="center">
-  <img src="Images/IMG_5_Architecture.png" alt="Real-Time Event-Driven Architecture" />
+  <img src="Images/IMG_5_Architecture.png" alt="Real-Time Event-Driven Architecture" width="75%" />
 </p>
 
 ---
@@ -139,7 +139,7 @@ PlatePass introduces a **Solana token reward layer** that makes food rescue fina
 <br clear="left" />
 
 <p align="center">
-  <img src="Images/IMG_3_Solana_EcoSystem.png" alt="Solana Token Reward Ecosystem" />
+  <img src="Images/IMG_3_Solana_EcoSystem.png" alt="Solana Token Reward Ecosystem" width="75%" />
 </p>
 
 ---
@@ -147,7 +147,7 @@ PlatePass introduces a **Solana token reward layer** that makes food rescue fina
 ## Projected Impact
 
 <p align="center">
-  <img src="Images/IMG_6_Impact_Metrics.png" alt="PlatePass Impact Metrics" />
+  <img src="Images/IMG_6_Impact_Metrics.png" alt="PlatePass Impact Metrics" width="75%" />
 </p>
 
 ---
