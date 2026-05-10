@@ -242,7 +242,6 @@ export default function CreateListingForm({ onSuccess, onCancel }: CreateListing
           ref={fileInputRef}
           type="file"
           accept="image/*"
-          capture="environment"
           onChange={handlePhotoCapture}
           className="hidden"
         />
