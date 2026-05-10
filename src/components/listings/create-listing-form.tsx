@@ -17,6 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FoodCategory, StorageType } from "@/lib/types";
 import { toast } from "sonner";
+import VoiceInput from "@/components/voice/voice-input";
 
 interface CreateListingFormProps {
   onSuccess?: () => void;
@@ -203,6 +204,22 @@ export default function CreateListingForm({ onSuccess, onCancel }: CreateListing
               onChange={handlePhotoCapture}
               className="hidden"
             />
+          </div>
+
+          {/* Voice Input */}
+          <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+            <VoiceInput
+              label="Describe your food"
+              onTranscript={(text) => {
+                setForm((f) => ({
+                  ...f,
+                  title: text.split(".")[0].slice(0, 80) || f.title,
+                  description: text.length > 80 ? text : f.description,
+                }));
+                toast.success("Voice captured!");
+              }}
+            />
+            <span className="text-xs text-muted-foreground">or type below</span>
           </div>
 
           {/* Title */}

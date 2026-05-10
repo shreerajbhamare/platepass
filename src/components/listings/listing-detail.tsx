@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import ListenButton from "@/components/voice/listen-button";
 
 interface ListingDetailProps {
   listing: Listing;
@@ -24,13 +25,18 @@ export default function ListingDetail({ listing, onClaim, onRequestDelivery, onC
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b">
         <h3 className="font-semibold text-sm truncate pr-2">{listing.title}</h3>
-        <button
-          onClick={onClose}
-          className="text-muted-foreground hover:text-foreground text-lg leading-none shrink-0"
-          aria-label="Close"
-        >
-          x
-        </button>
+        <div className="flex items-center gap-1 shrink-0">
+          <ListenButton
+            text={`${listing.title}. ${listing.description || ""} ${listing.quantity_remaining} servings available. Pick up at ${listing.pickup_address}. ${listing.allergens.length > 0 ? `Allergen warning: ${listing.allergens.join(", ")}` : ""}`}
+          />
+          <button
+            onClick={onClose}
+            className="text-muted-foreground hover:text-foreground text-lg leading-none"
+            aria-label="Close"
+          >
+            x
+          </button>
+        </div>
       </div>
 
       {/* Content */}
