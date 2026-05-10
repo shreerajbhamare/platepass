@@ -330,6 +330,8 @@ Deployed on Vercel with automatic deploys from `main`.
 
 **Shreeraj Bhamare** — Full-stack development, AI integration, system architecture
 
+**Siddharth Bhamare** — Backend development, database design, Solana integration
+
 ---
 
 ## Hackathon
