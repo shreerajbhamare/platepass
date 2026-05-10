@@ -151,15 +151,18 @@ export default function CreateListingForm({ onSuccess, onCancel }: CreateListing
 
       let photoUrl: string | null = null;
 
-      // Upload photo
+      // Upload photo (compressed to avoid size limits)
       if (photoFile) {
-        const ext = photoFile.name.split(".").pop();
-        const path = `listings/${user.id}/${Date.now()}.${ext}`;
+        const path = `listings/${user.id}/${Date.now()}.jpg`;
+        const compressed = await compressImage(photoFile);
         const { error: uploadError } = await supabase.storage
           .from("food-photos")
-          .upload(path, photoFile);
+          .upload(path, compressed, { contentType: "image/jpeg" });
 
-        if (!uploadError) {
+        if (uploadError) {
+          console.error("Photo upload failed:", uploadError.message);
+          toast.error("Photo upload failed, listing will be created without photo.");
+        } else {
           const { data: urlData } = supabase.storage
             .from("food-photos")
             .getPublicUrl(path);
@@ -450,12 +453,11 @@ export default function CreateListingForm({ onSuccess, onCancel }: CreateListing
   );
 }
 
-function fileToBase64(file: File): Promise<string> {
+function resizeToCanvas(file: File, maxSize: number, quality: number): Promise<HTMLCanvasElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement("canvas");
-      const maxSize = 512;
       let { width, height } = img;
       if (width > height && width > maxSize) {
         height = (height / width) * maxSize;
@@ -468,9 +470,29 @@ function fileToBase64(file: File): Promise<string> {
       canvas.height = height;
       const ctx = canvas.getContext("2d");
       ctx?.drawImage(img, 0, 0, width, height);
-      resolve(canvas.toDataURL("image/jpeg", 0.5));
+      void quality; // used by callers via toDataURL/toBlob
+      resolve(canvas);
     };
     img.onerror = reject;
     img.src = URL.createObjectURL(file);
   });
+}
+
+function fileToBase64(file: File): Promise<string> {
+  return resizeToCanvas(file, 512, 0.5).then(
+    (canvas) => canvas.toDataURL("image/jpeg", 0.5)
+  );
+}
+
+function compressImage(file: File): Promise<Blob> {
+  return resizeToCanvas(file, 1024, 0.7).then(
+    (canvas) =>
+      new Promise((resolve, reject) => {
+        canvas.toBlob(
+          (blob) => (blob ? resolve(blob) : reject(new Error("Compression failed"))),
+          "image/jpeg",
+          0.7
+        );
+      })
+  );
 }
