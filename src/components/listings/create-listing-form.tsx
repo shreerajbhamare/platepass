@@ -455,7 +455,7 @@ function fileToBase64(file: File): Promise<string> {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement("canvas");
-      const maxSize = 800;
+      const maxSize = 512;
       let { width, height } = img;
       if (width > height && width > maxSize) {
         height = (height / width) * maxSize;
@@ -468,7 +468,7 @@ function fileToBase64(file: File): Promise<string> {
       canvas.height = height;
       const ctx = canvas.getContext("2d");
       ctx?.drawImage(img, 0, 0, width, height);
-      resolve(canvas.toDataURL("image/jpeg", 0.7));
+      resolve(canvas.toDataURL("image/jpeg", 0.5));
     };
     img.onerror = reject;
     img.src = URL.createObjectURL(file);
