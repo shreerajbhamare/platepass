@@ -151,8 +151,24 @@ export default function CreateListingForm({ onSuccess, onCancel }: CreateListing
 
       let photoUrl: string | null = null;
 
-      // Upload photo (compressed to avoid size limits)
-      if (photoFile) {
+      // Check for preseeded demo photos based on AI-detected title
+      const titleLower = form.title.toLowerCase();
+      const DEMO_PHOTOS: Record<string, string> = {
+        "ice cream": "https://vjqxvrugrnynfepgrmzi.supabase.co/storage/v1/object/public/food-photos/demo/icecream_yellow.jpg",
+        "icecream": "https://vjqxvrugrnynfepgrmzi.supabase.co/storage/v1/object/public/food-photos/demo/icecream_yellow.jpg",
+        "gelato": "https://vjqxvrugrnynfepgrmzi.supabase.co/storage/v1/object/public/food-photos/demo/icecream_yellow.jpg",
+        "water bottle": "https://vjqxvrugrnynfepgrmzi.supabase.co/storage/v1/object/public/food-photos/demo/water_bottle.jpg",
+        "water": "https://vjqxvrugrnynfepgrmzi.supabase.co/storage/v1/object/public/food-photos/demo/water_bottle.jpg",
+        "drinking water": "https://vjqxvrugrnynfepgrmzi.supabase.co/storage/v1/object/public/food-photos/demo/water_bottle.jpg",
+        "purified water": "https://vjqxvrugrnynfepgrmzi.supabase.co/storage/v1/object/public/food-photos/demo/water_bottle.jpg",
+      };
+
+      const demoMatch = Object.entries(DEMO_PHOTOS).find(([key]) => titleLower.includes(key));
+
+      if (demoMatch) {
+        photoUrl = demoMatch[1];
+      } else if (photoFile) {
+        // Upload photo (compressed to avoid size limits)
         const path = `listings/${user.id}/${Date.now()}.jpg`;
         const compressed = await compressImage(photoFile);
         const { error: uploadError } = await supabase.storage
