@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,22 +75,24 @@ export default function CreateListingForm({ onSuccess, onCancel }: CreateListing
         body: JSON.stringify({ image: base64 }),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        if (data.title) {
-          setForm((prev) => ({
-            ...prev,
-            title: data.title || prev.title,
-            description: data.description || prev.description,
-            food_category: data.food_category || prev.food_category,
-            quantity_total: data.quantity || prev.quantity_total,
-            dietary_tags: data.dietary_tags || prev.dietary_tags,
-          }));
-          toast.success("AI auto-filled your listing! Review and edit if needed.");
-        }
+      const data = await res.json();
+
+      if (data.title || data.description || data.food_category) {
+        const validCategories = ["prepared", "produce", "baked", "packaged", "beverages", "other"];
+        setForm((prev) => ({
+          ...prev,
+          title: data.title || prev.title,
+          description: data.description || prev.description,
+          food_category: validCategories.includes(data.food_category) ? data.food_category : prev.food_category,
+          quantity_total: typeof data.quantity === "number" ? data.quantity : prev.quantity_total,
+          dietary_tags: Array.isArray(data.dietary_tags) ? data.dietary_tags : prev.dietary_tags,
+        }));
+        toast.success("AI auto-filled your listing! Review and edit if needed.");
+      } else {
+        toast.info("AI couldn't detect food. Fill in the details manually.");
       }
     } catch {
-      // AI detection is optional, fail silently
+      toast.info("AI detection unavailable. Fill in the details manually.");
     } finally {
       setAiDetecting(false);
     }
@@ -98,16 +100,38 @@ export default function CreateListingForm({ onSuccess, onCancel }: CreateListing
 
   const handleGetLocation = () => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const { latitude, longitude } = pos.coords;
         setForm((prev) => ({
           ...prev,
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
+          lat: latitude,
+          lng: longitude,
         }));
+
+        // Reverse geocode to get address
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+          );
+          if (res.ok) {
+            const data = await res.json();
+            const addr = data.display_name;
+            if (addr) {
+              setForm((prev) => ({ ...prev, pickup_address: addr.split(",").slice(0, 3).join(",").trim() }));
+            }
+          }
+        } catch {
+          // Reverse geocode failed, that's fine — user can type manually
+        }
+
         toast.success("Location detected!");
       });
     }
   };
+
+  // Auto-detect location on mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { handleGetLocation(); }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
