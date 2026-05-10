@@ -14,7 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FoodCategory, StorageType } from "@/lib/types";
 import { toast } from "sonner";
 import VoiceInput from "@/components/voice/voice-input";
@@ -177,54 +176,44 @@ export default function CreateListingForm({ onSuccess, onCancel }: CreateListing
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          🍽️ Share Surplus Food
-          {form.is_flash && <span className="text-purple-600 animate-pulse">⚡ Flash</span>}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Photo Capture */}
-          <div className="space-y-2">
-            <Label>Photo (AI will auto-fill the form)</Label>
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-colors relative overflow-hidden"
-            >
-              {photoPreview ? (
-                <div className="relative">
-                  <img
-                    src={photoPreview}
-                    alt="Food preview"
-                    className={`w-full h-40 object-cover rounded transition-all ${aiDetecting ? "blur-sm scale-[1.02]" : ""}`}
-                  />
-                  {aiDetecting && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded">
-                      <div className="bg-white/90 px-4 py-2 rounded-full text-sm font-medium animate-pulse">
-                        🤖 AI analyzing your food...
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="py-6 text-muted-foreground">
-                  <p className="text-2xl mb-1">📸</p>
-                  <p>Tap to take photo or upload</p>
-                  <p className="text-xs mt-1">AI will auto-detect food type, quantity & tags</p>
+    <div className="w-full max-w-lg mx-auto">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Photo Capture — prominent, full-width */}
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          className="border-2 border-dashed border-green-300 rounded-lg text-center cursor-pointer hover:border-green-500 transition-colors relative overflow-hidden bg-green-50/50"
+        >
+          {photoPreview ? (
+            <div className="relative">
+              <img
+                src={photoPreview}
+                alt="Food preview"
+                className={`w-full h-48 object-cover transition-all ${aiDetecting ? "blur-sm scale-[1.02]" : ""}`}
+              />
+              {aiDetecting && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                  <div className="bg-white/90 px-4 py-2 rounded-full text-sm font-medium animate-pulse">
+                    🤖 AI analyzing your food...
+                  </div>
                 </div>
               )}
             </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={handlePhotoCapture}
-              className="hidden"
-            />
-          </div>
+          ) : (
+            <div className="py-8 text-muted-foreground">
+              <p className="text-4xl mb-2">📸</p>
+              <p className="font-medium text-foreground">Tap to take a photo</p>
+              <p className="text-xs mt-1">AI will auto-detect food type, quantity & tags</p>
+            </div>
+          )}
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={handlePhotoCapture}
+          className="hidden"
+        />
 
           {/* AI Loading Skeleton State */}
           {aiDetecting && (
@@ -428,8 +417,7 @@ export default function CreateListingForm({ onSuccess, onCancel }: CreateListing
             </>
           )}
         </form>
-      </CardContent>
-    </Card>
+    </div>
   );
 }
 
