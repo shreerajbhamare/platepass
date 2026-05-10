@@ -1,9 +1,3 @@
-<p align="center">
-  <img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-BzDI4uzt2LYSK3YP9UguQDZrOZmC8X.png" width="80" />
-  <img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-SsfjxCJh43Hr1dqzkbFWUGH3ICZQbH.png" width="80" />
-  <img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-RQtOXVb8LaWRBM1vFtlMCggGMulrKV.png" width="80" />
-</p>
-
 <h1 align="center">PlatePass</h1>
 <p align="center"><strong>Real-time hyperlocal food surplus radar, powered by multi-agent AI</strong></p>
 <p align="center">
@@ -15,8 +9,6 @@
 ---
 
 ## The Problem
-
-<img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-TjlQjzEjOBahJ7XJYI49jbifgXpz41.png" width="48" align="left" />
 
 **1.3 billion tons** of food is wasted globally every year. Meanwhile, **828 million people** go hungry every night. In the US alone:
 
@@ -35,48 +27,21 @@ Existing solutions (food banks, TooGoodToGo) solve wholesale logistics through c
 
 ## The Solution
 
-<img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-JLGCwuVRfvOMwVMpimP9wXFiu6Nw4x.png" width="48" align="left" />
-
 PlatePass turns every person with surplus food into a broadcast tower and every hungry person into a receiver. Five specialized AI agents handle food identification, freshness prediction, geofenced notifications, and volunteer logistics automatically.
 
-**Average time from photo to first claim: 4.2 minutes.**
-
-### How It Works
-
-<table>
-<tr>
-<td align="center" width="25%">
-<img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-s09fUJ3H6nVTAzwemNRaSQgTJi6PUP.png" width="56" /><br/>
-<strong>1. Snap</strong><br/>
-<sub>Take a photo of surplus food</sub>
-</td>
-<td align="center" width="25%">
-<img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-vCbtdmRUutVmm5NeAk2OPuldTwPzC9.png" width="56" /><br/>
-<strong>2. AI Detects</strong><br/>
-<sub>Vision Agent identifies food, fills all fields</sub>
-</td>
-<td align="center" width="25%">
-<img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-SsfjxCJh43Hr1dqzkbFWUGH3ICZQbH.png" width="56" /><br/>
-<strong>3. Pin</strong><br/>
-<sub>Auto-pinned on live surplus map</sub>
-</td>
-<td align="center" width="25%">
-<img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-CK4odMSKWdmIj0ueBtNq9HOZR6Fbgv.png" width="56" /><br/>
-<strong>4. Alert</strong><br/>
-<sub>Push to users within 40-mile radius</sub>
-</td>
-</tr>
-</table>
+<p align="center">
+  <img src="Images/IMG_1_User_Journey.png" alt="User Journey — From Surplus to Saved Meal" />
+</p>
 
 ---
 
 ## Multi-Agent AI Architecture
 
-<img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-vCbtdmRUutVmm5NeAk2OPuldTwPzC9.png" width="48" align="left" />
-
 PlatePass is not a single model. It is a coordinated system of **five expert agents**, each fine-tuned for a specific domain, communicating through a shared event bus powered by Supabase Realtime.
 
-<br clear="left" />
+<p align="center">
+  <img src="Images/IMG_2_Mult_Agent_Framework.png" alt="Multi-Agent AI Architecture" />
+</p>
 
 | Agent | Model / Tech | What It Does | Performance |
 |-------|-------------|--------------|-------------|
@@ -86,42 +51,27 @@ PlatePass is not a single model. It is a coordinated system of **five expert age
 | **Logistics Agent** | Route optimization engine | Assigns volunteer runners. Multi-stop pickup optimization. Capacity and availability matching | Delivery time: 45 min (manual) to 18 min (optimized) |
 | **Notification Agent** | PostGIS geofencing | Radius-based push alerts (default 40 miles). Smart throttling for notification fatigue. Flash Drop sub-second alerts | Sub-second delivery via Realtime |
 
-### Agent Communication Flow
-
-```
-Photo Upload
-    │
-    ▼
-┌─────────────────┐
-│  Vision Agent   │──→ food type, servings, dietary tags, alt-text
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ Freshness Agent │──→ Rot Score (continuous, every 60s)
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ Matching Agent  │──→ ranked nearby seekers by fit score
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────────┐
-│ Notification Agent  │──→ push to all users in 40-mile geofence
-└────────┬────────────┘
-         │
-         ▼
-┌─────────────────┐
-│ Logistics Agent │──→ runner assignment (if delivery requested)
-└─────────────────┘
-```
-
 ### Fine-Tuning Details
 
 - **Vision Agent**: GPT-4o-mini fine-tuned on 12,000+ labeled food images across 200 categories. Training focused on distinguishing prepared vs. raw, estimating portion sizes from visual cues, and identifying packaging type for freshness inference.
 - **Freshness Agent**: Trained on USDA FoodKeeper dataset combined with real-world spoilage reports. Incorporates ambient temperature from weather APIs and storage condition signals from the Vision Agent output.
 - **Matching Agent**: Trained on 50,000+ simulated donor-seeker pairs with outcome labels (claimed, expired, delivered). Optimizes for minimum food waste, not just minimum distance.
+
+---
+
+## AI Food Recognition Pipeline
+
+<p align="center">
+  <img src="Images/IMG_4_AI_FOOD_Recon_Pipeline.png" alt="AI Food Recognition Pipeline" />
+</p>
+
+---
+
+## Real-Time Event-Driven Architecture
+
+<p align="center">
+  <img src="Images/IMG_5_Architecture.png" alt="Real-Time Event-Driven Architecture" />
+</p>
 
 ---
 
@@ -161,51 +111,19 @@ Photo Upload
 
 ## Self-Sustaining Incentive Model
 
-<img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-S70eRKwGghbWrxnQFigJARrNiDgtR2.png" width="48" align="left" />
-
 PlatePass introduces a **Solana token reward layer** that makes food rescue financially sustainable without relying on grants or advertising revenue.
 
-<br clear="left" />
-
-| Component | How It Works |
-|-----------|-------------|
-| **SOL Rewards** | Top leaderboard contributors earn Solana tokens distributed weekly |
-| **CSR Partnerships** | Restaurants, grocery chains, and food brands sponsor token pools in exchange for verified ESG impact metrics |
-| **Community Donations** | Public donation pool supplements CSR funding |
-| **Zero-Cost Access** | No subscriptions. No premium tiers. No income verification. |
-
-**The loop is self-sustaining:** CSR funding rewards active users. Active users generate verified impact metrics. Metrics attract more CSR partners. More partners fund more rewards.
+<p align="center">
+  <img src="Images/IMG_3_Solana_EcoSystem.png" alt="Solana Token Reward Ecosystem" />
+</p>
 
 ---
 
-## Projected Impact (Year 1, Single City)
+## Projected Impact
 
-<table>
-<tr>
-<td align="center">
-<img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-BzDI4uzt2LYSK3YP9UguQDZrOZmC8X.png" width="40" /><br/>
-<strong>48,000</strong><br/>
-<sub>Meals Rescued</sub>
-</td>
-<td align="center">
-<img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-emC1BR5ljWANScSXgr4K8nwvA1f0aW.png" width="40" /><br/>
-<strong>120 tons</strong><br/>
-<sub>CO2 Prevented</sub>
-</td>
-<td align="center">
-<img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-S70eRKwGghbWrxnQFigJARrNiDgtR2.png" width="40" /><br/>
-<strong>$384,000</strong><br/>
-<sub>Community Savings</sub>
-</td>
-<td align="center">
-<img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-TjlQjzEjOBahJ7XJYI49jbifgXpz41.png" width="40" /><br/>
-<strong>6.7M liters</strong><br/>
-<sub>Water Conserved</sub>
-</td>
-</tr>
-</table>
-
-<sub>Based on 400 active users, 4 listings/user/week, 60% claim rate. Calculations from EPA, USDA, ReFED, and Water Footprint Network.</sub>
+<p align="center">
+  <img src="Images/IMG_6_Impact_Metrics.png" alt="PlatePass Impact Metrics" />
+</p>
 
 ---
 
@@ -309,13 +227,6 @@ npm run dev
 
 Open http://localhost:3000
 
-### Seed Demo Data
-
-```bash
-node scripts/seed-community.js
-node scripts/seed-leaderboard.js
-```
-
 ---
 
 ## Deployment
@@ -341,9 +252,3 @@ Deployed on Vercel with automatic deploys from `main`.
 **Theme:** "Unfair Advantage" — What if everyone had the same insider knowledge that connected communities have? PlatePass democratizes the "I know someone with extra food" advantage, extending it to entire cities through AI.
 
 **Judging:** Impact (30%) · Creativity (25%) · Technical Effort (25%) · Presentation (20%)
-
----
-
-<p align="center">
-  <sub>3D icons by <a href="https://thiings.co">thiings.co</a></sub>
-</p>
