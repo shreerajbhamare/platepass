@@ -33,8 +33,21 @@ const ListingMap = dynamic(() => import("@/components/map/listing-map"), {
   ),
 });
 
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    setIsDesktop(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  return isDesktop;
+}
+
 export default function HomePage() {
   const supabase = createClient();
+  const isDesktop = useIsDesktop();
   const [listings, setListings] = useState<Listing[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -230,21 +243,6 @@ export default function HomePage() {
           </TabsContent>
         </Tabs>
 
-        {/* Mobile: Selected listing sheet */}
-        {selectedListing && (
-          <Sheet
-            open={!!selectedListing}
-            onOpenChange={() => setSelectedListing(null)}
-          >
-            <SheetContent side="bottom" className="h-[70vh] p-0">
-              <ListingDetail
-                listing={selectedListing}
-                onClaim={handleClaim}
-                onClose={() => setSelectedListing(null)}
-              />
-            </SheetContent>
-          </Sheet>
-        )}
       </main>
 
       {/* ============ DESKTOP LAYOUT ============ */}
@@ -312,6 +310,22 @@ export default function HomePage() {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Mobile only: Selected listing bottom sheet */}
+      {!isDesktop && selectedListing && (
+        <Sheet
+          open={!!selectedListing}
+          onOpenChange={() => setSelectedListing(null)}
+        >
+          <SheetContent side="bottom" className="h-[70vh] p-0">
+            <ListingDetail
+              listing={selectedListing}
+              onClaim={handleClaim}
+              onClose={() => setSelectedListing(null)}
+            />
+          </SheetContent>
+        </Sheet>
+      )}
     </div>
   );
 }
