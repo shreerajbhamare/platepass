@@ -198,7 +198,7 @@ export default function HomePage() {
                     🏃 Runner Mode
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer" onClick={() => { supabase.auth.signOut(); }}>
+                  <DropdownMenuItem className="cursor-pointer" onClick={async () => { await supabase.auth.signOut(); window.location.reload(); }}>
                     Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>

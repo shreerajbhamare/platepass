@@ -152,7 +152,7 @@ export default function RunnerPage() {
           <a href="/" className="text-xl font-bold text-green-700">🍽️ PlatePass</a>
           <Badge variant="secondary">Runner Mode</Badge>
         </div>
-        <Button size="sm" variant="ghost" onClick={() => supabase.auth.signOut()} className="cursor-pointer">
+        <Button size="sm" variant="ghost" onClick={async () => { await supabase.auth.signOut(); window.location.href = "/"; }} className="cursor-pointer">
           Sign Out
         </Button>
       </header>
