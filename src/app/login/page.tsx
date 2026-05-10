@@ -16,17 +16,34 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-orange-50 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-green-50 to-orange-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">PlatePass</CardTitle>
-          <CardDescription className="text-lg">
-            The cheat code is knowing someone with extra food.
+          <div className="text-5xl mb-2">🍽️</div>
+          <CardTitle className="text-3xl font-bold text-green-700">PlatePass</CardTitle>
+          <CardDescription className="text-base mt-2">
+            The &ldquo;unfair advantage&rdquo; is knowing someone with extra food.
             <br />
-            Now everyone has it.
+            <span className="font-medium text-foreground">Now everyone has it.</span>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* How it works */}
+          <div className="grid grid-cols-3 gap-2 py-3 text-center">
+            <div>
+              <p className="text-2xl">📸</p>
+              <p className="text-xs text-muted-foreground mt-1">Snap a photo</p>
+            </div>
+            <div>
+              <p className="text-2xl">📍</p>
+              <p className="text-xs text-muted-foreground mt-1">Pin on map</p>
+            </div>
+            <div>
+              <p className="text-2xl">🤝</p>
+              <p className="text-xs text-muted-foreground mt-1">Feed someone</p>
+            </div>
+          </div>
+
           <Button
             onClick={handleGoogleSignIn}
             className="w-full h-12 text-base cursor-pointer"
@@ -53,16 +70,32 @@ export default function LoginPage() {
             Sign in with Google
           </Button>
           <p className="text-center text-sm text-muted-foreground">
-            Or continue browsing the map without signing in
+            No sign-up needed. Browse anonymously anytime.
           </p>
           <a
             href="/"
-            className="w-full inline-flex items-center justify-center h-9 px-4 rounded-lg text-sm font-medium hover:bg-muted transition-colors"
+            className="w-full inline-flex items-center justify-center h-10 px-4 rounded-lg text-sm font-medium bg-green-700 text-white hover:bg-green-800 transition-colors"
           >
             Browse Food Map
           </a>
         </CardContent>
       </Card>
+
+      {/* Stats teaser */}
+      <div className="mt-6 flex gap-6 text-center text-sm text-muted-foreground">
+        <div>
+          <p className="text-lg font-bold text-green-700">2.5kg</p>
+          <p>CO2 saved per meal</p>
+        </div>
+        <div>
+          <p className="text-lg font-bold text-green-700">15min</p>
+          <p>avg claim-to-pickup</p>
+        </div>
+        <div>
+          <p className="text-lg font-bold text-green-700">$0</p>
+          <p>always free</p>
+        </div>
+      </div>
     </div>
   );
 }
