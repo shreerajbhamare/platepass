@@ -22,40 +22,46 @@ export async function POST(request: Request) {
     const mimeType = match[1];
     const base64Data = match[2];
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+    const body = JSON.stringify({
+      contents: [
+        {
+          parts: [
             {
-              parts: [
-                {
-                  inlineData: {
-                    mimeType,
-                    data: base64Data,
-                  },
-                },
-                {
-                  text: `Analyze this food image. Return ONLY a JSON object (no markdown, no explanation) with these fields:
+              inlineData: {
+                mimeType,
+                data: base64Data,
+              },
+            },
+            {
+              text: `Analyze this food image. Return ONLY a JSON object (no markdown, no explanation) with these fields:
 - "title": short description of the food with estimated quantity (e.g., "8 slices of pepperoni pizza")
 - "description": one sentence about the food
 - "food_category": one of "prepared", "produce", "baked", "packaged", "beverages", "other"
 - "quantity": estimated number of servings (integer)
 - "dietary_tags": array of applicable tags from ["vegetarian", "vegan", "halal", "kosher", "gluten-free", "nut-free", "dairy-free"]`,
-                },
-              ],
             },
           ],
-        }),
-      }
-    );
+        },
+      ],
+    });
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error("Gemini API error:", response.status, errText);
-      return NextResponse.json({ error: `Gemini API error: ${response.status}` }, { status: 502 });
+    // Retry up to 3 times on 429
+    let response: Response | null = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      response = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body,
+      });
+      if (response.status !== 429) break;
+      await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+    }
+
+    if (!response || !response.ok) {
+      const errText = await response?.text();
+      console.error("Gemini API error:", response?.status, errText);
+      return NextResponse.json({ error: `Gemini API error: ${response?.status}` }, { status: 502 });
     }
 
     const result = await response.json();
