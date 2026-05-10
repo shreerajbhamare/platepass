@@ -16,15 +16,14 @@ interface ListingMapProps {
 export default function ListingMap({
   listings,
   onListingClick,
-  center = [41.8781, -87.6298], // Chicago default
-  zoom = 13,
 }: ListingMapProps) {
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<L.LayerGroup | null>(null);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const hasFlewIn = useRef(false);
 
-  // Get user location (don't auto-zoom to it — let fitBounds handle view)
+  // Get user location
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -32,17 +31,17 @@ export default function ListingMap({
           setUserLocation([pos.coords.latitude, pos.coords.longitude]);
         },
         () => {
-          // Use default Chicago center
+          // Use default — will fly to densest listing area instead
         }
       );
     }
   }, []);
 
-  // Initialize map
+  // Initialize map — start zoomed out to show the whole US
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
-    const map = L.map(containerRef.current).setView(center, zoom);
+    const map = L.map(containerRef.current).setView([39.8283, -98.5795], 4); // Center of US, zoomed out
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       maxZoom: 19,
@@ -126,15 +125,44 @@ export default function ListingMap({
       L.marker(userLocation, { icon: userIcon }).addTo(markersRef.current);
     }
 
-    // Auto-fit map to show all markers
-    if (listings.length > 0 && mapRef.current) {
-      const bounds = L.latLngBounds(
-        listings.map((l) => [l.location.lat, l.location.lng] as [number, number])
-      );
+    // Animated fly-in: start wide, then zoom to user's area with nearby listings
+    if (listings.length > 0 && mapRef.current && !hasFlewIn.current) {
+      hasFlewIn.current = true;
+
+      // Find the densest listing area near the user (or just nearest listings)
+      let flyTarget: [number, number];
+      let flyZoom = 12;
+
       if (userLocation) {
-        bounds.extend(userLocation);
+        flyTarget = userLocation;
+        // Find listings within ~50 miles and determine zoom
+        const nearby = listings.filter((l) => {
+          const dist = Math.sqrt(
+            Math.pow(l.location.lat - userLocation[0], 2) +
+            Math.pow(l.location.lng - userLocation[1], 2)
+          );
+          return dist < 1; // ~1 degree ≈ 69 miles
+        });
+        flyZoom = nearby.length > 5 ? 12 : nearby.length > 0 ? 11 : 10;
+      } else {
+        // No user location — fly to the densest cluster of listings
+        // Simple approach: find the centroid of the most clustered listings
+        const lats = listings.map((l) => l.location.lat);
+        const lngs = listings.map((l) => l.location.lng);
+        flyTarget = [
+          lats.reduce((a, b) => a + b, 0) / lats.length,
+          lngs.reduce((a, b) => a + b, 0) / lngs.length,
+        ];
+        flyZoom = 5;
       }
-      mapRef.current.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+
+      // Delay the fly animation so user sees the full map first
+      setTimeout(() => {
+        mapRef.current?.flyTo(flyTarget, flyZoom, {
+          duration: 2.5,
+          easeLinearity: 0.25,
+        });
+      }, 1500);
     }
   }, [listings, userLocation, onListingClick]);
 
