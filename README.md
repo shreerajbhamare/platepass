@@ -6,11 +6,14 @@
 
 <h1 align="center">PlatePass</h1>
 <p align="center"><strong>Real-time hyperlocal food surplus radar, powered by multi-agent AI</strong></p>
-<p align="center">
-  <a href="https://platepass-kappa.vercel.app">Live Demo</a> · 
-  <a href="https://platepass-kappa.vercel.app/about">About</a> ·
-  ALI Builds Hackathon 2026
-</p>
+
+| **Team PlatePass** | ALI Builds Hackathon 2026 |
+| ------------------ | ------------------------- |
+| Live Application   | [platepass-kappa.vercel.app](https://platepass-kappa.vercel.app) |
+| GitHub Repository  | [shreerajbhamare/platepass](https://github.com/shreerajbhamare/platepass) |
+| About Page         | [platepass-kappa.vercel.app/about](https://platepass-kappa.vercel.app/about) |
+| Hackathon          | [ALI Builds 2026](https://www.alibuildschicago.com/) - May 10, Chicago |
+| Theme              | "Unfair Advantage" |
 
 ---
 
