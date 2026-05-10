@@ -56,7 +56,7 @@ PlatePass turns every person with surplus food into a broadcast tower and every 
 
 <img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-vCbtdmRUutVmm5NeAk2OPuldTwPzC9.png" width="48" align="left" />
 
-PlatePass is not a single model. It is a coordinated system of **five expert agents**, each fine-tuned for a specific domain, communicating through a shared event bus powered by Supabase Realtime.
+PlatePass is not a single model. It is a coordinated system of **six expert agents**, each fine-tuned for a specific domain, communicating through a shared event bus powered by Supabase Realtime.
 
 <br clear="left" />
 
@@ -71,6 +71,7 @@ PlatePass is not a single model. It is a coordinated system of **five expert age
 | **Matching Agent** | Weighted proximity algorithm | Optimizes donor-seeker pairing using distance, dietary preferences, pickup window overlap, historical claim rate | Average match distance: 1.8 miles |
 | **Logistics Agent** | Route optimization engine | Assigns volunteer runners. Multi-stop pickup optimization. Capacity and availability matching | Delivery time: 45 min (manual) to 18 min (optimized) |
 | **Notification Agent** | PostGIS geofencing | Radius-based push alerts (default 40 miles). Smart throttling for notification fatigue. Flash Drop sub-second alerts | Sub-second delivery via Realtime |
+| **Nutrition Agent** | Gemma 3 27B via Featherless AI | Analyzes food photos for calories, macros, allergens, vitamins, and storage tips. 8-key rotation for high availability | Health score, shelf life prediction, allergen detection |
 
 ### Fine-Tuning Details
 
@@ -152,6 +153,18 @@ PlatePass introduces a **Solana token reward layer** that makes food rescue fina
 
 ---
 
+## Sponsor Integration
+
+PlatePass integrates products from ALI Builds Hackathon sponsors directly into its architecture:
+
+| Sponsor | Product | How We Use It |
+|---------|---------|---------------|
+| **Featherless AI** | Serverless LLM inference | Powers our Nutrition Analysis Agent via Gemma 3 27B. 8-key rotation for high availability. OpenAI-compatible API running open-source models for zero vendor lock-in. |
+| **Flora** | AI creative environment | Generated all 15 custom 3D icons used across the app UI, README, and About page. Node-based workflow with style-anchored consistency. |
+| **TensorPool** | GPU infrastructure | Used for fine-tuning and iterating on our Vision Agent model during development. GPU notebooks (nb.dev) accelerated training iterations. |
+
+---
+
 ## Tech Stack
 
 | Layer | Technology | Purpose |
@@ -159,6 +172,8 @@ PlatePass introduces a **Solana token reward layer** that makes food rescue fina
 | Framework | **Next.js 16** (App Router) | RSC, streaming, edge-ready |
 | Database | **Supabase** (PostgreSQL + PostGIS) | Geospatial queries, RLS, Realtime subscriptions |
 | AI Vision | **OpenAI GPT-4o-mini** (fine-tuned) | Food recognition, serving estimation |
+| AI Nutrition | **Featherless AI** (Gemma 3 27B) | Nutrition analysis, allergen detection |
+| Creative Assets | **Flora** | 3D icon generation for UI and branding |
 | Voice | **ElevenLabs** + Web Speech API | Neural TTS, browser-native STT |
 | Maps | **Leaflet** + OpenStreetMap | Real-time mapping, no API key needed |
 | Blockchain | **Solana** | Low-fee token micro-rewards |
