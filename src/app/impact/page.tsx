@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -57,6 +58,8 @@ export default function ImpactPage() {
     moneySaved: 0,
   });
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [leaderboardPage, setLeaderboardPage] = useState(0);
+  const [hasMoreLeaderboard, setHasMoreLeaderboard] = useState(false);
   const [myProfile, setMyProfile] = useState<LeaderboardEntry | null>(null);
 
   useEffect(() => {
@@ -97,14 +100,26 @@ export default function ImpactPage() {
     }
   }
 
-  async function fetchLeaderboard() {
+  const PAGE_SIZE = 10;
+
+  async function fetchLeaderboard(page = 0) {
+    const from = page * PAGE_SIZE;
+    const to = from + PAGE_SIZE;
     const { data } = await supabase
       .from("profiles")
       .select("id, display_name, avatar_url, meals_shared, meals_claimed, deliveries_completed, impact_score, streak_days")
       .order("impact_score", { ascending: false })
-      .limit(10);
+      .range(from, to);
 
-    if (data) setLeaderboard(data as LeaderboardEntry[]);
+    if (data) {
+      if (page === 0) {
+        setLeaderboard(data.slice(0, PAGE_SIZE) as LeaderboardEntry[]);
+      } else {
+        setLeaderboard((prev) => [...prev, ...data.slice(0, PAGE_SIZE)] as LeaderboardEntry[]);
+      }
+      setHasMoreLeaderboard(data.length > PAGE_SIZE);
+      setLeaderboardPage(page);
+    }
   }
 
   async function fetchMyProfile() {
@@ -268,6 +283,16 @@ export default function ImpactPage() {
                   </div>
                 ))}
               </div>
+              {hasMoreLeaderboard && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mt-2 cursor-pointer"
+                  onClick={() => fetchLeaderboard(leaderboardPage + 1)}
+                >
+                  Show More
+                </Button>
+              )}
             </CardContent>
           </Card>
 
