@@ -10,10 +10,11 @@ import { Separator } from "@/components/ui/separator";
 interface ListingDetailProps {
   listing: Listing;
   onClaim?: (listing: Listing) => void;
+  onRequestDelivery?: (listing: Listing) => void;
   onClose?: () => void;
 }
 
-export default function ListingDetail({ listing, onClaim, onClose }: ListingDetailProps) {
+export default function ListingDetail({ listing, onClaim, onRequestDelivery, onClose }: ListingDetailProps) {
   const rotColor = getRotColor(listing.rot_score);
   const rotLabel = getRotLabel(listing.rot_score);
   const timeLeft = getTimeRemaining(listing.pickup_end);
@@ -123,15 +124,26 @@ export default function ListingDetail({ listing, onClaim, onClose }: ListingDeta
         )}
       </div>
 
-      {/* Claim Button — sticky bottom */}
-      {onClaim && listing.quantity_remaining > 0 && (
-        <div className="p-3 border-t">
-          <Button
-            className="w-full cursor-pointer"
-            onClick={() => onClaim(listing)}
-          >
-            Claim Pickup — {listing.quantity_remaining} left
-          </Button>
+      {/* Action Buttons — sticky bottom */}
+      {listing.quantity_remaining > 0 && (onClaim || onRequestDelivery) && (
+        <div className="p-3 border-t space-y-2">
+          {onClaim && (
+            <Button
+              className="w-full cursor-pointer"
+              onClick={() => onClaim(listing)}
+            >
+              Claim Pickup — {listing.quantity_remaining} left
+            </Button>
+          )}
+          {onRequestDelivery && (
+            <Button
+              variant="outline"
+              className="w-full cursor-pointer"
+              onClick={() => onRequestDelivery(listing)}
+            >
+              🏃 Request Delivery
+            </Button>
+          )}
         </div>
       )}
     </div>

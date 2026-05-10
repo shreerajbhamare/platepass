@@ -128,6 +128,28 @@ export default function HomePage() {
     }
   };
 
+  const handleRequestDelivery = async (listing: Listing) => {
+    if (!user) {
+      toast.error("Please sign in to request delivery");
+      return;
+    }
+
+    const { error } = await supabase.from("deliveries").insert({
+      listing_id: listing.id,
+      requester_id: user.id,
+      pickup_location: `SRID=4326;POINT(${listing.location.lng} ${listing.location.lat})`,
+      status: "requested",
+      notes: `Delivery requested for: ${listing.title}`,
+    });
+
+    if (error) {
+      toast.error("Failed to request delivery. Try again.");
+    } else {
+      toast.success("Delivery requested! A runner will pick it up for you.");
+      setSelectedListing(null);
+    }
+  };
+
   const filteredListings = listings.filter((l) => {
     if (filter === "all") return true;
     if (filter === "flash") return l.is_flash;
@@ -152,6 +174,12 @@ export default function HomePage() {
         <div className="flex items-center gap-2">
           {user ? (
             <>
+              <a
+                href="/runner"
+                className="inline-flex items-center justify-center h-8 px-3 text-sm font-medium rounded-md border border-border hover:bg-muted transition-colors"
+              >
+                🏃 Runner
+              </a>
               <Button
                 size="sm"
                 className="cursor-pointer"
@@ -262,6 +290,7 @@ export default function HomePage() {
             <ListingDetail
               listing={selectedListing}
               onClaim={handleClaim}
+              onRequestDelivery={handleRequestDelivery}
               onClose={() => setSelectedListing(null)}
             />
           ) : (
@@ -321,6 +350,7 @@ export default function HomePage() {
             <ListingDetail
               listing={selectedListing}
               onClaim={handleClaim}
+              onRequestDelivery={handleRequestDelivery}
               onClose={() => setSelectedListing(null)}
             />
           </SheetContent>
