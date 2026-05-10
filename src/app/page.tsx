@@ -330,11 +330,11 @@ export default function HomePage() {
 
       {/* Create Listing Sheet */}
       <Sheet open={showCreateForm} onOpenChange={setShowCreateForm}>
-        <SheetContent side="bottom" className="h-[90vh] overflow-auto">
-          <SheetHeader>
+        <SheetContent side="bottom" className="h-[90vh] !gap-2">
+          <SheetHeader className="shrink-0 pb-0">
             <SheetTitle>Share Surplus Food</SheetTitle>
           </SheetHeader>
-          <div className="py-4">
+          <div className="flex-1 overflow-auto px-4 pb-4">
             <CreateListingForm
               onSuccess={() => {
                 setShowCreateForm(false);
