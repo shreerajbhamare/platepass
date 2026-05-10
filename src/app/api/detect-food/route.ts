@@ -8,8 +8,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No image provided" }, { status: 400 });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
+    const apiKeys = [
+      process.env.GEMINI_API_KEY,
+      process.env.GEMINI_API_KEY_2,
+      process.env.GEMINI_API_KEY_3,
+      process.env.GEMINI_API_KEY_4,
+    ].filter(Boolean) as string[];
+
+    if (apiKeys.length === 0) {
       return NextResponse.json({ error: "GEMINI_API_KEY not configured" }, { status: 500 });
     }
 
@@ -22,8 +28,7 @@ export async function POST(request: Request) {
     const mimeType = match[1];
     const base64Data = match[2];
 
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-    const body = JSON.stringify({
+    const requestBody = JSON.stringify({
       contents: [
         {
           parts: [
@@ -46,16 +51,18 @@ export async function POST(request: Request) {
       ],
     });
 
-    // Retry up to 3 times on 429
+    // Try each key, rotate on 429
     let response: Response | null = null;
-    for (let attempt = 0; attempt < 3; attempt++) {
-      response = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body,
-      });
+    for (const key of apiKeys) {
+      response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: requestBody,
+        }
+      );
       if (response.status !== 429) break;
-      await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
     }
 
     if (!response || !response.ok) {
