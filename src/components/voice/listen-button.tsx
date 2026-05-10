@@ -3,11 +3,14 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 
+const AUDIO_BASE = "https://vjqxvrugrnynfepgrmzi.supabase.co/storage/v1/object/public/listing-audio";
+
 interface ListenButtonProps {
+  listingId: string;
   text: string;
 }
 
-export default function ListenButton({ text }: ListenButtonProps) {
+export default function ListenButton({ listingId, text }: ListenButtonProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -22,33 +25,22 @@ export default function ListenButton({ text }: ListenButtonProps) {
 
     setIsLoading(true);
     try {
-      const res = await fetch("/api/tts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      });
+      // Try pre-generated audio first
+      const audioUrl = `${AUDIO_BASE}/${listingId}.mp3`;
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
 
-      if (!res.ok) {
+      audio.onended = () => setIsPlaying(false);
+      audio.onerror = () => {
         // Fallback to browser TTS
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.onend = () => setIsPlaying(false);
         speechSynthesis.speak(utterance);
         setIsPlaying(true);
         setIsLoading(false);
-        return;
-      }
-
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
-      audioRef.current = audio;
-
-      audio.onended = () => {
-        setIsPlaying(false);
-        URL.revokeObjectURL(url);
       };
 
-      audio.play();
+      await audio.play();
       setIsPlaying(true);
     } catch {
       // Fallback to browser TTS

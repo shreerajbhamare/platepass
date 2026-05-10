@@ -27,6 +27,7 @@ export default function ListingDetail({ listing, onClaim, onRequestDelivery, onC
         <h3 className="font-semibold text-sm truncate pr-2">{listing.title}</h3>
         <div className="flex items-center gap-1 shrink-0">
           <ListenButton
+            listingId={listing.id}
             text={`${listing.title}. ${listing.description || ""} ${listing.quantity_remaining} servings available. Pick up at ${listing.pickup_address}. ${listing.allergens.length > 0 ? `Allergen warning: ${listing.allergens.join(", ")}` : ""}`}
           />
           <button
