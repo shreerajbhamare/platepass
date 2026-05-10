@@ -426,7 +426,7 @@ export default function CreateListingForm({ onSuccess, onCancel }: CreateListing
               <div className="flex items-center justify-between">
                 <div>
                   <Label htmlFor="flash">⚡ Flash Drop</Label>
-                  <p className="text-xs text-muted-foreground">Under 1 hour — notify nearby users</p>
+                  <p className="text-xs text-muted-foreground">Under 1 hour - notify nearby users</p>
                 </div>
                 <Switch
                   id="flash"

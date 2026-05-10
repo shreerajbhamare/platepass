@@ -181,7 +181,7 @@ export default function RunnerPage() {
               <div className="text-center py-12 text-muted-foreground">
                 <p className="text-4xl mb-2">🏃</p>
                 <p>No delivery requests right now.</p>
-                <p className="text-sm mt-1">Check back soon — new requests appear in real-time!</p>
+                <p className="text-sm mt-1">Check back soon - new requests appear in real-time!</p>
               </div>
             )}
             {available.map((d) => (

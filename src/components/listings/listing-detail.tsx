@@ -139,7 +139,7 @@ export default function ListingDetail({ listing, onClaim, onRequestDelivery, onC
               className="w-full cursor-pointer"
               onClick={() => onClaim(listing)}
             >
-              Claim Pickup — {listing.quantity_remaining} left
+              Claim Pickup - {listing.quantity_remaining} left
             </Button>
           )}
           {onRequestDelivery && (

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PlatePass — Food Surplus Radar",
+  title: "PlatePass - Food Surplus Radar",
   description:
     "Real-time hyperlocal food surplus map. See nearby excess food, claim it, or share yours.",
   manifest: "/manifest.json",

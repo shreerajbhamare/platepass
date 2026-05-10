@@ -647,7 +647,7 @@ function NewPostModal({ onClose, onSuccess, user, groups, selectedGroup }: { onC
               onChange={(e) => setVisibility(e.target.value)}
               className="w-full h-9 rounded-md border px-3 text-sm"
             >
-              <option value="public">🌍 Public — Everyone can see</option>
+              <option value="public">🌍 Public - Everyone can see</option>
               {groups.map((g) => (
                 <option key={g.id} value={g.id}>🔒 {g.name}</option>
               ))}

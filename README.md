@@ -42,7 +42,7 @@ PlatePass turns every person with surplus food into a broadcast tower and every 
 <br clear="left" />
 
 <p align="center">
-  <img src="Images/IMG_1_User_Journey.png" alt="User Journey — From Surplus to Saved Meal" />
+  <img src="Images/IMG_1_User_Journey.png" alt="User Journey - From Surplus to Saved Meal" />
 </p>
 
 ---
@@ -259,17 +259,17 @@ Deployed on Vercel with automatic deploys from `main`.
 
 ## Team
 
-**Shreeraj Bhamare** — Full-stack development, AI integration, system architecture
+**Shreeraj Bhamare** - Full-stack development, AI integration, system architecture
 
-**Siddharth Bhamare** — Backend development, database design, Solana integration
+**Siddharth Bhamare** - Backend development, database design, Solana integration
 
 ---
 
 ## Hackathon
 
-**ALI Builds Hackathon 2026** — May 10, Chicago
+**ALI Builds Hackathon 2026** - May 10, Chicago
 
-**Theme:** "Unfair Advantage" — What if everyone had the same insider knowledge that connected communities have? PlatePass democratizes the "I know someone with extra food" advantage, extending it to entire cities through AI.
+**Theme:** "Unfair Advantage" - What if everyone had the same insider knowledge that connected communities have? PlatePass democratizes the "I know someone with extra food" advantage, extending it to entire cities through AI.
 
 **Judging:** Impact (30%) · Creativity (25%) · Technical Effort (25%) · Presentation (20%)
 
