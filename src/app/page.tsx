@@ -51,7 +51,7 @@ export default function HomePage() {
   // Fetch listings
   const fetchListings = useCallback(async () => {
     const { data, error } = await supabase
-      .from("listings")
+      .from("listings_with_coords")
       .select("*")
       .eq("status", "active")
       .gte("pickup_end", new Date().toISOString())
@@ -60,7 +60,7 @@ export default function HomePage() {
     if (!error && data) {
       const parsed = data.map((l: Record<string, unknown>) => ({
         ...l,
-        location: parseLocation(l.location),
+        location: { lat: l.lat as number, lng: l.lng as number },
       })) as Listing[];
       setListings(parsed);
     }
@@ -180,27 +180,63 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <main className="flex-1 relative">
-        <Tabs value={view} onValueChange={(v) => setView(v as "map" | "feed")} className="h-full flex flex-col">
-          <TabsList className="mx-4 mt-2 w-fit">
-            <TabsTrigger value="map">🗺️ Map</TabsTrigger>
-            <TabsTrigger value="feed">📋 Feed</TabsTrigger>
-          </TabsList>
+      {/* Main Content — Desktop: map + sidebar, Mobile: tabs */}
+      <main className="flex-1 relative flex flex-col lg:flex-row">
+        {/* Mobile: Tab switcher */}
+        <div className="lg:hidden flex flex-col h-full flex-1">
+          <Tabs value={view} onValueChange={(v) => setView(v as "map" | "feed")} className="h-full flex flex-col">
+            <TabsList className="mx-4 mt-2 w-fit">
+              <TabsTrigger value="map">🗺️ Map</TabsTrigger>
+              <TabsTrigger value="feed">📋 Feed</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="map" className="flex-1 m-0 p-0">
-            <div className="h-full min-h-[calc(100vh-180px)]">
-              <ListingMap
-                listings={filteredListings}
-                onListingClick={setSelectedListing}
-              />
+            <TabsContent value="map" className="flex-1 m-0 p-0">
+              <div className="h-full min-h-[calc(100vh-160px)]">
+                <ListingMap
+                  listings={filteredListings}
+                  onListingClick={setSelectedListing}
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="feed" className="flex-1 overflow-auto p-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {filteredListings.length === 0 && (
+                  <div className="col-span-full text-center py-12 text-muted-foreground">
+                    <p className="text-4xl mb-2">🍽️</p>
+                    <p>No food listings nearby right now.</p>
+                    <p className="text-sm mt-1">Be the first to share!</p>
+                  </div>
+                )}
+                {filteredListings.map((listing) => (
+                  <ListingCard
+                    key={listing.id}
+                    listing={listing}
+                    onClaim={handleClaim}
+                  />
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        {/* Desktop: Map + Feed sidebar */}
+        <div className="hidden lg:flex flex-1">
+          {/* Map — takes most of the space */}
+          <div className="flex-1 relative">
+            <ListingMap
+              listings={filteredListings}
+              onListingClick={setSelectedListing}
+            />
+          </div>
+          {/* Sidebar feed */}
+          <div className="w-[380px] border-l overflow-auto bg-white">
+            <div className="p-3 border-b sticky top-0 bg-white z-10">
+              <h2 className="font-semibold text-sm">Nearby Food ({filteredListings.length})</h2>
             </div>
-          </TabsContent>
-
-          <TabsContent value="feed" className="flex-1 overflow-auto p-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
+            <div className="p-3 space-y-3">
               {filteredListings.length === 0 && (
-                <div className="col-span-full text-center py-12 text-muted-foreground">
+                <div className="text-center py-12 text-muted-foreground">
                   <p className="text-4xl mb-2">🍽️</p>
                   <p>No food listings nearby right now.</p>
                   <p className="text-sm mt-1">Be the first to share!</p>
@@ -214,8 +250,8 @@ export default function HomePage() {
                 />
               ))}
             </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+        </div>
       </main>
 
       {/* Create Listing Sheet */}
@@ -253,15 +289,3 @@ export default function HomePage() {
   );
 }
 
-function parseLocation(loc: unknown): { lat: number; lng: number } {
-  if (!loc) return { lat: 41.8781, lng: -87.6298 };
-  if (typeof loc === "object" && loc !== null && "coordinates" in loc) {
-    const coords = (loc as { coordinates: number[] }).coordinates;
-    return { lat: coords[1], lng: coords[0] };
-  }
-  if (typeof loc === "string") {
-    const match = loc.match(/POINT\(([-\d.]+)\s+([-\d.]+)\)/);
-    if (match) return { lat: parseFloat(match[2]), lng: parseFloat(match[1]) };
-  }
-  return { lat: 41.8781, lng: -87.6298 };
-}

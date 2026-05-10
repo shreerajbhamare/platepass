@@ -24,16 +24,12 @@ export default function ListingMap({
   const markersRef = useRef<L.LayerGroup | null>(null);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
 
-  // Get user location
+  // Get user location (don't auto-zoom to it — let fitBounds handle view)
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          const loc: [number, number] = [pos.coords.latitude, pos.coords.longitude];
-          setUserLocation(loc);
-          if (mapRef.current) {
-            mapRef.current.setView(loc, 14);
-          }
+          setUserLocation([pos.coords.latitude, pos.coords.longitude]);
         },
         () => {
           // Use default Chicago center
@@ -128,6 +124,17 @@ export default function ListingMap({
         iconAnchor: [8, 8],
       });
       L.marker(userLocation, { icon: userIcon }).addTo(markersRef.current);
+    }
+
+    // Auto-fit map to show all markers
+    if (listings.length > 0 && mapRef.current) {
+      const bounds = L.latLngBounds(
+        listings.map((l) => [l.location.lat, l.location.lng] as [number, number])
+      );
+      if (userLocation) {
+        bounds.extend(userLocation);
+      }
+      mapRef.current.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
     }
   }, [listings, userLocation, onListingClick]);
 
