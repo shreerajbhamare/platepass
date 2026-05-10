@@ -175,6 +175,12 @@ export default function HomePage() {
           {user ? (
             <>
               <a
+                href="/impact"
+                className="inline-flex items-center justify-center h-8 px-3 text-sm font-medium rounded-md border border-border hover:bg-muted transition-colors"
+              >
+                🌍 Impact
+              </a>
+              <a
                 href="/runner"
                 className="inline-flex items-center justify-center h-8 px-3 text-sm font-medium rounded-md border border-border hover:bg-muted transition-colors"
               >
