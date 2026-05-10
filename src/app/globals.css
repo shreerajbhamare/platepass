@@ -128,3 +128,24 @@
     @apply font-sans;
   }
 }
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  .badge,
+  [data-slot="badge"] {
+    border: 1px solid currentColor;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse {
+    animation: none;
+  }
+}
+
+/* Focus visible styles for keyboard users */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}

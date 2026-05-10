@@ -19,7 +19,7 @@ export default function ListingCard({ listing, onClaim, distance }: ListingCardP
   const timeLeft = getTimeRemaining(listing.pickup_end);
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
+    <Card className="overflow-hidden hover:shadow-md transition-shadow" role="article" aria-label={`${listing.title}, ${listing.quantity_remaining} servings, ${rotLabel}`}>
       <div className="relative">
         {listing.photo_url && (
           <img

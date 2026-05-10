@@ -162,9 +162,9 @@ export default function HomePage() {
   );
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div className="flex flex-col h-screen overflow-hidden" id="main-content">
       {/* Header */}
-      <header className="border-b px-4 py-3 flex items-center justify-between bg-white/80 backdrop-blur-sm z-50 shrink-0">
+      <header className="border-b px-4 py-3 flex items-center justify-between bg-white/80 backdrop-blur-sm z-50 shrink-0" role="banner">
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-bold text-green-700">🍽️ PlatePass</h1>
           <Badge variant="secondary" className="hidden sm:inline-flex">
@@ -237,7 +237,7 @@ export default function HomePage() {
       </div>
 
       {/* ============ MOBILE LAYOUT ============ */}
-      <main className="flex-1 min-h-0 lg:hidden">
+      <main className="flex-1 min-h-0 lg:hidden" role="main" aria-label="Food listings">
         <Tabs
           value={view}
           onValueChange={(v) => setView(v as "map" | "feed")}
@@ -280,7 +280,7 @@ export default function HomePage() {
       </main>
 
       {/* ============ DESKTOP LAYOUT ============ */}
-      <main className="flex-1 min-h-0 hidden lg:flex">
+      <main className="flex-1 min-h-0 hidden lg:flex" role="main" aria-label="Food map and listings">
         {/* Map — fills remaining space */}
         <div className="flex-1 min-h-0 relative">
           <ListingMap
