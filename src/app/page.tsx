@@ -328,13 +328,20 @@ export default function HomePage() {
         </div>
       </main>
 
-      {/* Create Listing Sheet */}
-      <Sheet open={showCreateForm} onOpenChange={setShowCreateForm}>
-        <SheetContent side="bottom" className="h-[90vh] !gap-2">
-          <SheetHeader className="shrink-0 pb-0">
-            <SheetTitle>Share Surplus Food</SheetTitle>
-          </SheetHeader>
-          <div className="flex-1 overflow-auto px-4 pb-4">
+      {/* Create Listing — full screen overlay */}
+      {showCreateForm && (
+        <div className="fixed inset-0 z-50 bg-white flex flex-col">
+          <div className="flex items-center justify-between px-4 py-3 border-b shrink-0">
+            <h2 className="font-semibold text-lg">Share Surplus Food</h2>
+            <button
+              onClick={() => setShowCreateForm(false)}
+              className="text-muted-foreground hover:text-foreground text-xl leading-none p-1"
+              aria-label="Close"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="flex-1 overflow-auto p-4">
             <CreateListingForm
               onSuccess={() => {
                 setShowCreateForm(false);
@@ -343,8 +350,8 @@ export default function HomePage() {
               onCancel={() => setShowCreateForm(false)}
             />
           </div>
-        </SheetContent>
-      </Sheet>
+        </div>
+      )}
 
       {/* Mobile only: Selected listing bottom sheet */}
       {!isDesktop && selectedListing && (
