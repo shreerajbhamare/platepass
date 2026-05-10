@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-BzDI4uzt2LYSK3YP9UguQDZrOZmC8X.png" width="80" />
+  <img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-SsfjxCJh43Hr1dqzkbFWUGH3ICZQbH.png" width="80" />
+  <img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-RQtOXVb8LaWRBM1vFtlMCggGMulrKV.png" width="80" />
+</p>
+
 <h1 align="center">PlatePass</h1>
 <p align="center"><strong>Real-time hyperlocal food surplus radar, powered by multi-agent AI</strong></p>
 <p align="center">
@@ -9,6 +15,8 @@
 ---
 
 ## The Problem
+
+<img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-TjlQjzEjOBahJ7XJYI49jbifgXpz41.png" width="48" align="left" />
 
 **1.3 billion tons** of food is wasted globally every year. Meanwhile, **828 million people** go hungry every night. In the US alone:
 
@@ -27,7 +35,11 @@ Existing solutions (food banks, TooGoodToGo) solve wholesale logistics through c
 
 ## The Solution
 
+<img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-JLGCwuVRfvOMwVMpimP9wXFiu6Nw4x.png" width="48" align="left" />
+
 PlatePass turns every person with surplus food into a broadcast tower and every hungry person into a receiver. Five specialized AI agents handle food identification, freshness prediction, geofenced notifications, and volunteer logistics automatically.
+
+<br clear="left" />
 
 <p align="center">
   <img src="Images/IMG_1_User_Journey.png" alt="User Journey — From Surplus to Saved Meal" />
@@ -37,7 +49,11 @@ PlatePass turns every person with surplus food into a broadcast tower and every 
 
 ## Multi-Agent AI Architecture
 
+<img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-vCbtdmRUutVmm5NeAk2OPuldTwPzC9.png" width="48" align="left" />
+
 PlatePass is not a single model. It is a coordinated system of **five expert agents**, each fine-tuned for a specific domain, communicating through a shared event bus powered by Supabase Realtime.
+
+<br clear="left" />
 
 <p align="center">
   <img src="Images/IMG_2_Mult_Agent_Framework.png" alt="Multi-Agent AI Architecture" />
@@ -111,7 +127,11 @@ PlatePass is not a single model. It is a coordinated system of **five expert age
 
 ## Self-Sustaining Incentive Model
 
+<img src="https://lftz25oez4aqbxpq.public.blob.vercel-storage.com/image-S70eRKwGghbWrxnQFigJARrNiDgtR2.png" width="48" align="left" />
+
 PlatePass introduces a **Solana token reward layer** that makes food rescue financially sustainable without relying on grants or advertising revenue.
+
+<br clear="left" />
 
 <p align="center">
   <img src="Images/IMG_3_Solana_EcoSystem.png" alt="Solana Token Reward Ecosystem" />
@@ -252,3 +272,9 @@ Deployed on Vercel with automatic deploys from `main`.
 **Theme:** "Unfair Advantage" — What if everyone had the same insider knowledge that connected communities have? PlatePass democratizes the "I know someone with extra food" advantage, extending it to entire cities through AI.
 
 **Judging:** Impact (30%) · Creativity (25%) · Technical Effort (25%) · Presentation (20%)
+
+---
+
+<p align="center">
+  <sub>3D icons by <a href="https://thiings.co">thiings.co</a></sub>
+</p>
