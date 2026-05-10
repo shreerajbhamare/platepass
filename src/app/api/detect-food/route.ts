@@ -8,10 +8,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No image provided" }, { status: 400 });
     }
 
-    // Use Claude Vision API for food detection
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      // Fallback: return empty so the form still works without AI
       return NextResponse.json({});
     }
 
@@ -21,52 +19,45 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid image format" }, { status: 400 });
     }
 
-    const mediaType = match[1];
+    const mimeType = match[1];
     const base64Data = match[2];
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 300,
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "image",
-                source: {
-                  type: "base64",
-                  media_type: mediaType,
-                  data: base64Data,
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  inlineData: {
+                    mimeType,
+                    data: base64Data,
+                  },
                 },
-              },
-              {
-                type: "text",
-                text: `Analyze this food image. Return ONLY a JSON object (no markdown, no explanation) with these fields:
+                {
+                  text: `Analyze this food image. Return ONLY a JSON object (no markdown, no explanation) with these fields:
 - "title": short description of the food with estimated quantity (e.g., "8 slices of pepperoni pizza")
 - "description": one sentence about the food
 - "food_category": one of "prepared", "produce", "baked", "packaged", "beverages", "other"
 - "quantity": estimated number of servings (integer)
 - "dietary_tags": array of applicable tags from ["vegetarian", "vegan", "halal", "kosher", "gluten-free", "nut-free", "dairy-free"]`,
-              },
-            ],
-          },
-        ],
-      }),
-    });
+                },
+              ],
+            },
+          ],
+        }),
+      }
+    );
 
     if (!response.ok) {
       return NextResponse.json({});
     }
 
     const result = await response.json();
-    const text = result.content?.[0]?.text || "{}";
+    const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
 
     // Parse the JSON response
     const cleaned = text.replace(/```json\n?|\n?```/g, "").trim();
