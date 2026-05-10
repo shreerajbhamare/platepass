@@ -11,6 +11,8 @@
 | ------------------ | ------------------------- |
 | Live Application   | [platepass-kappa.vercel.app](https://platepass-kappa.vercel.app) |
 | GitHub Repository  | [shreerajbhamare/platepass](https://github.com/shreerajbhamare/platepass) |
+| Demo Video         | _Coming soon_ |
+| DevPost Submission | _Coming soon_ |
 | About Page         | [platepass-kappa.vercel.app/about](https://platepass-kappa.vercel.app/about) |
 | Hackathon          | [ALI Builds 2026](https://www.alibuildschicago.com/) - May 10, Chicago |
 | Theme              | "Unfair Advantage" |
