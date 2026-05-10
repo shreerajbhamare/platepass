@@ -13,8 +13,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Sheet,
   SheetContent,
-  SheetHeader,
-  SheetTitle,
 } from "@/components/ui/sheet";
 import {
   Select,
@@ -23,6 +21,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import type { User } from "@supabase/supabase-js";
 
@@ -174,33 +179,30 @@ export default function HomePage() {
         <div className="flex items-center gap-2">
           {user ? (
             <>
-              <a
-                href="/impact"
-                className="inline-flex items-center justify-center h-8 px-3 text-sm font-medium rounded-md border border-border hover:bg-muted transition-colors"
-              >
-                🌍 Impact
-              </a>
-              <a
-                href="/runner"
-                className="inline-flex items-center justify-center h-8 px-3 text-sm font-medium rounded-md border border-border hover:bg-muted transition-colors"
-              >
-                🏃 Runner
-              </a>
               <Button
                 size="sm"
                 className="cursor-pointer"
                 onClick={() => setShowCreateForm(true)}
               >
-                + Share Food
+                + Share
               </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => supabase.auth.signOut()}
-                className="cursor-pointer"
-              >
-                Sign Out
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md border border-border hover:bg-muted transition-colors cursor-pointer text-sm">
+                  ☰
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem className="cursor-pointer" onSelect={() => { window.location.href = "/impact"; }}>
+                    🌍 Impact Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer" onSelect={() => { window.location.href = "/runner"; }}>
+                    🏃 Runner Mode
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="cursor-pointer" onSelect={() => { supabase.auth.signOut(); }}>
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           ) : (
             <a
