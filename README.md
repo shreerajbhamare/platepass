@@ -11,8 +11,8 @@
 | ------------------ | ------------------------- |
 | Live Application   | [platepass-kappa.vercel.app](https://platepass-kappa.vercel.app) |
 | GitHub Repository  | [shreerajbhamare/platepass](https://github.com/shreerajbhamare/platepass) |
-| Demo Video         | _Coming soon_ |
-| DevPost Submission | _Coming soon_ |
+| Demo Video         | [![YouTube](https://img.shields.io/badge/YouTube-Demo_Video-red?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=dQw4w9WgXcQ) |
+| DevPost Submission | [ali-hackathon.devpost.com](https://ali-hackathon.devpost.com/) |
 | About Page         | [platepass-kappa.vercel.app/about](https://platepass-kappa.vercel.app/about) |
 | Hackathon          | [ALI Builds 2026](https://www.alibuildschicago.com/) - May 10, Chicago |
 | Theme              | "Unfair Advantage" |
