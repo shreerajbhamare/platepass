@@ -200,6 +200,9 @@ export default function HomePage() {
                   <DropdownMenuItem className="cursor-pointer" onClick={() => { window.location.href = "/runner"; }}>
                     🏃 Runner Mode
                   </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => { window.location.href = "/about"; }}>
+                    📖 About PlatePass
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="cursor-pointer" onClick={async () => { await supabase.auth.signOut(); window.location.reload(); }}>
                     Sign Out
